@@ -1,0 +1,45 @@
+{
+    "name": "__MSG_appName__",
+    "version": "0.0.5",
+    "manifest_version": 2,
+    "description": "__MSG_appDescription__",
+    "icons": {
+        "16": "images/icon-16.png",
+        "128": "images/icon-128.png"
+    },
+    "default_locale": "en",
+    "background": {
+        "scripts": [
+            "scripts/chromereload.js",
+            "scripts/background.js"
+        ]
+    },
+    "page_action": {
+        "default_icon": {
+            "19": "images/icon-19.png",
+            "38": "images/icon-38.png"
+        },
+        "default_title": "Jira Improved",
+        "default_popup": "popup.html"
+    },
+    "options_page": "options.html",
+    "omnibox": {
+        "keyword": "Jira Improved"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://*/*",
+                "https://ticket.opower.com/secure/RapidBoard.jspa?*"
+            ],
+            "css": [
+                "styles/main.css"
+            ],
+            "js": [
+                "scripts/contentscript.js"
+            ],
+            "run_at": "document_end",
+            "all_frames": false
+        }
+    ]
+}
