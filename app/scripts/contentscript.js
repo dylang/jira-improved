@@ -23,19 +23,37 @@ function js (AJS, GH) {
         var rapidView = fromQueryString('rapidView');
         if (!rapidView) { return; }
 
-        // if Hide Done is clicked, hide the last column.
         var $lastColumns = $('.ghx-columns li:last-child');
         var $lastColumnHeader = $('.ghx-column-headers li:last-child');
-        if ($lastColumns.has('div').length === 0) {
+
+        function hideLastColumn() {
             $lastColumnHeader.hide();
             $lastColumns.hide();
-        } else {
+        }
+
+        function showLastColumn() {
             $lastColumns.show();
             $lastColumnHeader.show();
         }
 
+        function checkLastColumn() {
+            // if Hide Done is clicked, hide the last column.
+            if ($lastColumns.has('div').length === 0) {
+                hideLastColumn();
+            } else {
+                showLastColumn();
+            }
 
-        GH.WorkDataLoader.getData(601).done(function(data) {
+        }
+
+        $('.js-parent-drag')
+            .on('mousedown.drag', showLastColumn)
+            .on('mouseup.drop', checkLastColumn);
+
+        checkLastColumn();
+
+        GH.WorkDataLoader.getData(rapidView).done(function(data) {
+
             var issues = data.issuesData.issues;
             var $issues = $('.ghx-issue');
 
@@ -75,7 +93,8 @@ function js (AJS, GH) {
             });
 
             // remove the silly priority we don't use
-            $('.ghx-feedback').remove();
+            //$('.ghx-feedback').remove();
+
 
             // must re-register in case of updates
             GH.CallbackManager.registerCallback(GH.WorkController.CALLBACK_POOL_RENDERED, 'SelectMostAppropriateIssueCallback', addFeatureNames);
