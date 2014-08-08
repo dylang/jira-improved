@@ -2,19 +2,37 @@
 class="aui-label"
 */
 
+.ghx-issue {
+    height: auto !important;;
+    min-height: 95px !important;;
+    margin-bottom: 2px !important;;
+    font-size: 12px !important;
+}
+
+
+.ghx-issue .ghx-grabber,
+.ghx-issue:first-child .ghx-grabber {
+    height: 100% !important;;
+}
+
+.chrome .ghx-issue-fields .ghx-summary .ghx-inner {
+    beight: auto !important;;
+}
+
+
 .dylan {
-    position: absolute;
-    bottom: 1px;
-    right: 2px;
-    opacity: 0.7;
-    font-size: smaller;
-    padding: 0 4px;
     overflow: hidden;
-    display: inline-block;
-    max-height: 1.1em;
-    max-width: 200px;
+    max-width: 100%;
     transition: opacity 0.25s ease-in-out;
-    border-radius: 4px;
+    opacity: 0.7;
+
+    display: inline-block;
+    padding: 2px 4px;
+    font-size: 11.844px;
+    line-height: 14px;
+    color: #ffffff;
+    white-space: nowrap;
+    vertical-align: baseline;
 }
 
 .ghx-issue:hover .dylan,
@@ -22,3 +40,7 @@ class="aui-label"
     opacity: 1;
 }
 
+.dylan .status {
+    font-weight: bold;
+    padding-right: 4px;
+}

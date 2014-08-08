@@ -7,6 +7,9 @@ function js (AJS, GH) {
     var $ = AJS.$;
 
     var API_URL = '/rest/api/2/';
+    var STATUS_MAP = {
+        Open: 'Backlog'
+    };
 
     function fromQueryString (key) {
         var querystring = window.location.search.substring(1).split('&');
@@ -47,8 +50,11 @@ function js (AJS, GH) {
         }
 
         $('.js-parent-drag')
-            .on('mousedown.drag', showLastColumn)
-            .on('mouseup.drop', checkLastColumn);
+            .draggable({
+                distance: 2,
+                start: showLastColumn,
+                stop: checkLastColumn
+            });
 
         checkLastColumn();
 
@@ -74,6 +80,7 @@ function js (AJS, GH) {
 
             Object.keys(epics).forEach(function(epic) {
                 // https://ticket/rest/api/2/issue/XWEB-1323?fields=summary,customfield_13259,status
+                /////search?jql=issue=XWEB-1662&fields=status,summary,customfield_13259
                 var CUSTOM_FIELD_EPIC_NAME = 'customfield_13259';
                 $.ajax(API_URL + 'issue/' + epic + '?fields=summary,status,' + CUSTOM_FIELD_EPIC_NAME, {
                     dataType: 'json',
@@ -82,12 +89,21 @@ function js (AJS, GH) {
                     if (!data) { return; }
                     if (!data.fields) { return; }
                     if (!data.fields.status) { return; }
-                    if (!data.fields[CUSTOM_FIELD_EPIC_NAME]) { return; }
+                    if (!data.fields.summary) { return; }
+
+                    if (data.fields.summary != data.fields[CUSTOM_FIELD_EPIC_NAME]) {
+                        console.log('Missmatch names!')
+                        console.log(epic, ' > ', data.fields.summary);
+                        console.log(epic, ' > ', data.fields[CUSTOM_FIELD_EPIC_NAME]);
+                    }
+
+                    var status = STATUS_MAP[data.fields.status.name] || data.fields.status.name;
 
                     $issues.find('[data-epic=' + epic + ']')
                         .addClass('ghx-label-' + data.fields.status.statusCategory.id)
                         .addClass('dylan')
-                        .html(data.fields[CUSTOM_FIELD_EPIC_NAME]);
+                        .append('<span class="status">' + status + '</span>')
+                        .append('<span class="summary">' + data.fields.summary + '</span>');
 
                 });
             });
@@ -110,3 +126,25 @@ function js (AJS, GH) {
 var script = document.createElement('script');
 script.textContent = '(' + (js.toString()) + ')(window.AJS, window.GH);';
 document.body.appendChild(script);
+
+/*
+TODO:
+look at https://waffle.io/npm/npm styling
+* scroll each column independently
+* show where feature is
+* PR's: customfield_13153
+*
+* https://ticket.opower.com/rest/api/2/search?jql=issue=XWEB-1662&fields=status,summary,customfield_13259
+* Look up feature, get status.name, alt name
+
+for feature board
+* https://ticket.opower.com/rest/api/2/search?jql=%22Feature%20Link%22=XWEB-1282&fields=summary,status
+* https://ticket.opower.com/rest/api/2/search?jql=%22Feature%20Link%22=XWEB-1662&fields=summary,status
+* ^ list of tickets, ability to get count of open vs closed
+*
+* https://ticket.opower.com/rest/greenhopper/1.0/xboard/plan/backlog/data.json?rapidViewId=1023
+*   * filter out hidden: true,
+*   * epicStats, notDone, done
+*   * epicLabel vs summary
+
+ */
