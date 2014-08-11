@@ -13,9 +13,6 @@ function js (AJS, GH) {
         Open: 'Backlog'
     };
 
-    var isGithubAvailable = true;
-
-
     /**
      *
      * LOCAL STORAGE CACHING
@@ -127,10 +124,7 @@ function js (AJS, GH) {
         return params[key];
     }
 
-    var matchUrls = new RegExp(
-              "((http|https):(([A-Za-z0-9$_.+!*(),;/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*(),;/?:@&~=%-]*))?([A-Za-z0-9$_+!*();/?:~-]))"
-             ,"g"
-           );
+    var matchUrls = new RegExp('((http|https):(([A-Za-z0-9$_.+!*(),;/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*(),;/?:@&~=%-]*))?([A-Za-z0-9$_+!*();/?:~-]))','g');
 
     function processPullRequests(str) {
         if (!str || str.length === 0) { return; }
@@ -146,7 +140,7 @@ function js (AJS, GH) {
                 api: url
                     .replace(/(\/\/[^/]*)/, '$1/api/v3/repos')
                     .replace('/pull/', '/pulls/')
-            }
+            };
         });
     }
 
@@ -198,7 +192,7 @@ function js (AJS, GH) {
                 if (!issue) { return; }
                 if (!issue.key) { return; }
 
-                if (issue.statusName != 'Closed' && issue.statusName != 'Open') {
+                if (issue.statusName !== 'Closed' && issue.statusName !== 'Open') {
                     tickets.push(issue.key);
                 }
 
@@ -241,7 +235,7 @@ function js (AJS, GH) {
 
             var CUSTOM_FIELD_PULL_REQUESTS = 'customfield_13153';
 
-            var query = tickets.join('%20OR%20issue%3D')
+            var query = tickets.join('%20OR%20issue%3D');
 
             $.ajax(API_URL + 'search?jql=issue%3D' + query + '%20AND%20(labels%20is%20not%20empty%20OR%20"Code%20Review%20URL(s)"%20is%20not%20EMPTY)&fields=labels,' + CUSTOM_FIELD_PULL_REQUESTS, {
                 dataType: 'json',
@@ -269,7 +263,7 @@ function js (AJS, GH) {
                                 dataType: 'json',
                                 type: 'GET'
                             }).then(function(data) {
-                                if (!data) return;
+                                if (!data) { return; }
 
                                 $('[data-pr="' + pullRequest.api + '"')
                                     .removeClass('pull-request-unknown')
