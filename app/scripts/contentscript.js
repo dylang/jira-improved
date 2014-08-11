@@ -3,6 +3,8 @@
 function js (AJS, GH) {
     if (!AJS || !GH) { return; }
 
+    console.log('(((============ JIRA IMPROVED ADDED ==============)))');
+
     // jquery
     var $ = AJS.$;
 
@@ -10,6 +12,109 @@ function js (AJS, GH) {
     var STATUS_MAP = {
         Open: 'Backlog'
     };
+
+    var isGithubAvailable = true;
+
+
+    /**
+     *
+     * LOCAL STORAGE CACHING
+     * still a little buggy
+     *
+    window.onerror = false;
+    GH.Exception.handleJsException = function(err){debugger; throw err;};
+
+    $.ajaxTransport("json", function(options){
+           var cacheKey = options.cacheKey ||
+               options.url.replace(/jQuery.*
+               /, '') + (options.type || 'GET') + (options.data || '');
+           var storage = window.localStorage;
+
+           var value = storage.getItem(cacheKey);
+           if (value){
+               console.log('>>>>>>> LOADED FROM CACHE!!!', options.url);
+
+               // In the cache? Get it, parse it to json, call the completeCallback with the fetched value.
+               if (options.dataType.indexOf( 'json' ) === 0) value = JSON.parse(value);
+               return {
+                   send: function(headers, completeCallback) {
+                       completeCallback(200, 'success', {json:value})
+                   },
+                   abort: function() {
+                       console.log("Aborted ajax transport for json cache.");
+                   }
+               };
+           } else {
+               console.log('$$$$$$ CACHE MISS', options.url);
+           }
+    });
+    **/
+
+    /**
+     * Prefilter for caching ajax calls - adapted from
+     * https://github.com/paulirish/jquery-ajax-localstorage-cache, made to work with jqXHR Deferred Promises.
+     * See also $.ajaxTransport.
+     * New parameters available on the ajax call:
+     * localCache   : true,        // required if we want to use the cache functionality
+     * cacheTTL     : 1,           // in hours. Optional
+     * cacheKey     : 'post',      // optional
+     * isCacheValid : function  // optional - return true for valid, false for invalid
+     * @method $.ajaxPrefilter
+     * @param options {Object} Options for the ajax call, modified with ajax standard settings
+     */
+    /**
+    $.ajaxPrefilter(function(options){
+        var storage = window.localStorage;
+
+        options.cache = true;
+
+        var hourstl = options.cacheTTL || 1;
+
+        var cacheKey = options.cacheKey ||
+            options.url.replace( /jQuery.*
+            /,'' ) + (options.type || 'GET') + (options.data || '');
+
+        // isCacheValid is a function to validate cache
+        if ( options.isCacheValid && !options.isCacheValid() ){
+            storage.removeItem( cacheKey );
+        }
+        // if there's a TTL that's expired, flush this item
+        var ttl = storage.getItem(cacheKey + 'cachettl');
+        if ( ttl && ttl < +new Date() ){
+            storage.removeItem( cacheKey );
+            storage.removeItem( cacheKey + 'cachettl' );
+            ttl = 'expired';
+        }
+
+        var value = storage.getItem( cacheKey );
+        if ( !value ){
+            // If it not in the cache, we store the data, add success callback - normal callback will proceed
+            if ( options.success ) {
+                options.realsuccess = options.success;
+            }
+            options.success = function( data ) {
+                var strdata = data;
+                if ( this.dataType.indexOf( 'json' ) === 0 ) strdata = JSON.stringify( data );
+
+                // Save the data to storage catching exceptions (possibly QUOTA_EXCEEDED_ERR)
+                try {
+                    storage.setItem( cacheKey, strdata );
+                } catch (e) {
+                    // Remove any incomplete data that may have been saved before the exception was caught
+                    storage.removeItem( cacheKey );
+                    storage.removeItem( cacheKey + 'cachettl' );
+                }
+
+                if ( options.realsuccess ) options.realsuccess( data );
+            };
+
+            // store timestamp
+            if ( ! ttl || ttl === 'expired' ) {
+                storage.setItem( cacheKey + 'cachettl', +new Date() + 1000 * 60 * 60 * hourstl );
+            }
+        }
+    });
+    */
 
     function fromQueryString (key) {
         var querystring = window.location.search.substring(1).split('&');
@@ -20,6 +125,29 @@ function js (AJS, GH) {
         }
 
         return params[key];
+    }
+
+    var matchUrls = new RegExp(
+              "((http|https):(([A-Za-z0-9$_.+!*(),;/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*(),;/?:@&~=%-]*))?([A-Za-z0-9$_+!*();/?:~-]))"
+             ,"g"
+           );
+
+    function processPullRequests(str) {
+        if (!str || str.length === 0) { return; }
+
+        var urls = str.match(matchUrls);
+
+        // URL: https://github.com/x-web/x-web-canonical-lookup/pull/35
+        // API: https://github.com/api/v3/repos/x-web/x-web-canonical-lookup/pulls/35
+
+        return urls.map(function(url){
+            return {
+                url: url,
+                api: url
+                    .replace(/(\/\/[^/]*)/, '$1/api/v3/repos')
+                    .replace('/pull/', '/pulls/')
+            }
+        });
     }
 
     function addFeatureNames () {
@@ -64,10 +192,15 @@ function js (AJS, GH) {
             var $issues = $('.ghx-issue');
 
             var epics = {};
+            var tickets = [];
 
             issues.forEach(function(issue) {
                 if (!issue) { return; }
                 if (!issue.key) { return; }
+
+                if (issue.statusName != 'Closed' && issue.statusName != 'Open') {
+                    tickets.push(issue.key);
+                }
 
                 var $issue = $issues.filter('[data-issue-key=' + issue.key + ']');
                 $issue.find('.ghx-flags').hide();
@@ -79,8 +212,6 @@ function js (AJS, GH) {
             });
 
             Object.keys(epics).forEach(function(epic) {
-                // https://ticket/rest/api/2/issue/XWEB-1323?fields=summary,customfield_13259,status
-                /////search?jql=issue=XWEB-1662&fields=status,summary,customfield_13259
                 var CUSTOM_FIELD_EPIC_NAME = 'customfield_13259';
                 $.ajax(API_URL + 'issue/' + epic + '?fields=summary,status,' + CUSTOM_FIELD_EPIC_NAME, {
                     dataType: 'json',
@@ -91,8 +222,8 @@ function js (AJS, GH) {
                     if (!data.fields.status) { return; }
                     if (!data.fields.summary) { return; }
 
-                    if (data.fields.summary != data.fields[CUSTOM_FIELD_EPIC_NAME]) {
-                        console.log('Missmatch names!')
+                    if (data.fields.summary !== data.fields[CUSTOM_FIELD_EPIC_NAME]) {
+                        console.log('Missmatch names!');
                         console.log(epic, ' > ', data.fields.summary);
                         console.log(epic, ' > ', data.fields[CUSTOM_FIELD_EPIC_NAME]);
                     }
@@ -108,43 +239,63 @@ function js (AJS, GH) {
                 });
             });
 
-            // remove the silly priority we don't use
-            //$('.ghx-feedback').remove();
+            var CUSTOM_FIELD_PULL_REQUESTS = 'customfield_13153';
 
+            var query = tickets.join('%20OR%20issue%3D')
+
+            $.ajax(API_URL + 'search?jql=issue%3D' + query + '%20AND%20(labels%20is%20not%20empty%20OR%20"Code%20Review%20URL(s)"%20is%20not%20EMPTY)&fields=labels,' + CUSTOM_FIELD_PULL_REQUESTS, {
+                dataType: 'json',
+                type: 'GET'
+            }).then(function(data) {
+                if (!data) {
+                    return;
+                }
+                if (!data.issues) {
+                    return;
+                }
+
+                data.issues.forEach(function(issue){
+                    var pullRequests = processPullRequests(issue.fields[CUSTOM_FIELD_PULL_REQUESTS]);
+
+                    if (pullRequests) {
+                        var $where = $issues.filter('[data-issue-key=' + issue.key + ']').append('<div class="pull-requests">');
+                        pullRequests.forEach(function(pullRequest) {
+
+                            $where.append('<a href="' + pullRequest.url + '" target="_blank">' +
+                                '<span data-pr="' + pullRequest.api + '" class="pull-request pull-request-unknown"></span>' +
+                                '</a>');
+
+                            $.ajax(pullRequest.api, {
+                                dataType: 'json',
+                                type: 'GET'
+                            }).then(function(data) {
+                                if (!data) return;
+
+                                $('[data-pr="' + pullRequest.api + '"')
+                                    .removeClass('pull-request-unknown')
+                                    .addClass('pull-request-' + data.state);
+                            }).fail(function(err) {
+                                if (err.status === 0) { return; }
+
+                                $('[data-pr="' + pullRequest.api + '"')
+                                    .removeClass('pull-request-unknown')
+                                    .addClass('pull-request-error');
+                            });
+                        });
+                    }
+                });
+
+
+
+            });
 
             // must re-register in case of updates
             GH.CallbackManager.registerCallback(GH.WorkController.CALLBACK_POOL_RENDERED, 'SelectMostAppropriateIssueCallback', addFeatureNames);
         });
     }
-
-    // To get colors, but need quickfilter so we don't query every closed feature too
-    //https://ticket/rest/greenhopper/1.0/xboard/work/allData.json?rapidViewId=1023&activeQuickFilters=5283
-
     GH.CallbackManager.registerCallback(GH.WorkController.CALLBACK_POOL_RENDERED, 'SelectMostAppropriateIssueCallback', addFeatureNames);
 }
 
 var script = document.createElement('script');
 script.textContent = '(' + (js.toString()) + ')(window.AJS, window.GH);';
 document.body.appendChild(script);
-
-/*
-TODO:
-look at https://waffle.io/npm/npm styling
-* scroll each column independently
-* show where feature is
-* PR's: customfield_13153
-*
-* https://ticket.opower.com/rest/api/2/search?jql=issue=XWEB-1662&fields=status,summary,customfield_13259
-* Look up feature, get status.name, alt name
-
-for feature board
-* https://ticket.opower.com/rest/api/2/search?jql=%22Feature%20Link%22=XWEB-1282&fields=summary,status
-* https://ticket.opower.com/rest/api/2/search?jql=%22Feature%20Link%22=XWEB-1662&fields=summary,status
-* ^ list of tickets, ability to get count of open vs closed
-*
-* https://ticket.opower.com/rest/greenhopper/1.0/xboard/plan/backlog/data.json?rapidViewId=1023
-*   * filter out hidden: true,
-*   * epicStats, notDone, done
-*   * epicLabel vs summary
-
- */
