@@ -225,7 +225,7 @@ function js (AJS, GH) {
                         var color = issue.fields.status.statusCategory.colorName;
 
                         $('[data-issue-key=' + parentTicket + ']').append('<a href="/browse/' + issue.key + '" target="_blank" class="' +
-                        'jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-' + color + ' jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short' +
+                        'ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-' + color + ' jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short' +
                         '" title="' + summary + '">' +
                             status + '</a>');
                     });

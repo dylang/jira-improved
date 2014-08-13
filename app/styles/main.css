@@ -87,3 +87,6 @@ class="aui-label"
     opacity: 50%;
 }
 
+.ji-font-smaller {
+    font-size: 9px !important;
+}
