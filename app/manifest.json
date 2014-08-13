@@ -1,6 +1,6 @@
 {
     "name": "__MSG_appName__",
-    "version": "0.0.11",
+    "version": "0.0.14",
     "manifest_version": 2,
     "description": "__MSG_appDescription__",
     "icons": {
@@ -29,8 +29,8 @@
     "content_scripts": [
         {
             "matches": [
-                "https://*/*",
-                "https://ticket.opower.com/secure/RapidBoard.jspa?*"
+                "https://*/secure/RapidBoard.jspa*",
+                "https://*/jira/secure/RapidBoard.jspa*"
             ],
             "css": [
                 "styles/main.css"

@@ -8,10 +8,24 @@ function js (AJS, GH) {
     // jquery
     var $ = AJS.$;
 
-    var API_URL = '/rest/api/2/';
+    var API_PREFIX = window.location.pathname.replace('/secure/RapidBoard.jspa', '');
+
+    var API_URL = API_PREFIX + '/rest/api/2/';
     var STATUS_MAP = {
         Open: 'Backlog'
     };
+
+    /**
+     * To get info about the board you are looking at
+     * https://ticket.opower.com/rest/greenhopper/1.0/rapidviewconfig/editmodel.json?rapidViewId=1023
+     *
+     * To get all tickets for open epics
+     * https://ticket.opower.com/rest/api/2/search?maxResults=400&fields=status,customfield_13258&jql=issueFunction%20in%20linkedIssuesOf(%22project%20%3D%20XWEB%20AND%20resolution%20%3D%20unresolved%22%2C%20%22is%20Epic%20of%22)
+     * but you have to know the what to search for
+     *
+     * More functions
+     * https://jamieechlin.atlassian.net/wiki/display/GRV/Scripted+JQL+Functions
+     */
 
     /**
      *
@@ -186,14 +200,51 @@ function js (AJS, GH) {
             var $issues = $('.ghx-issue');
 
             var epics = {};
-            var tickets = [];
+            var openTicketsToCheckForPRs = [];
+
+            if (issues[0] && (issues[0].typeName === 'Feature' || issues[0].typeName === 'Epic')){
+                var CUSTOM_FIELD_EPIC_PARENT = 'customfield_13258';
+                var project = issues[0].key.replace(/-.*/, '');
+
+                $.ajax(API_URL + 'search?maxResults=500&fields=summary,status,' + CUSTOM_FIELD_EPIC_PARENT + '' +
+                    '&jql=issueFunction%20in%20linkedIssuesOf(%22project%20%3D%20' +
+                    project +
+                    '%20AND%20resolution%20%3D%20unresolved%22%2C%20%22is%20Epic%20of%22)', {
+                    dataType: 'json',
+                    type: 'GET'
+                }).then(function(data){
+
+                    if (!data) { return; }
+                    if (!data.issues) { return; }
+
+                    data.issues.forEach(function(issue){
+
+                        var parentTicket = issue.fields[CUSTOM_FIELD_EPIC_PARENT];
+                        var summary = issue.fields.summary;
+                        var status = issue.fields.status.name;
+                        var color = issue.fields.status.statusCategory.colorName;
+
+                        $('[data-issue-key=' + parentTicket + ']').append('<a href="/browse/' + issue.key + '" target="_blank" class="' +
+                        'jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-' + color + ' jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short' +
+                        '" title="' + summary + '">' +
+                            status + '</a>');
+                    });
+
+                });
+            }
+
+
 
             issues.forEach(function(issue) {
                 if (!issue) { return; }
                 if (!issue.key) { return; }
 
+                if (issue.typeName === 'Feature' || issue.typeName === 'Epic') {
+                    return;
+                }
+
                 if (issue.statusName !== 'Closed' && issue.statusName !== 'Open') {
-                    tickets.push(issue.key);
+                    openTicketsToCheckForPRs.push(issue.key);
                 }
 
                 var $issue = $issues.filter('[data-issue-key=' + issue.key + ']');
@@ -233,55 +284,54 @@ function js (AJS, GH) {
                 });
             });
 
-            var CUSTOM_FIELD_PULL_REQUESTS = 'customfield_13153';
+            if (openTicketsToCheckForPRs.length) {
+                var CUSTOM_FIELD_PULL_REQUESTS = 'customfield_13153';
 
-            var query = tickets.join('%20OR%20issue%3D');
+                var query = openTicketsToCheckForPRs.join('%20OR%20issue%3D');
 
-            $.ajax(API_URL + 'search?jql=issue%3D' + query + '%20AND%20(labels%20is%20not%20empty%20OR%20"Code%20Review%20URL(s)"%20is%20not%20EMPTY)&fields=labels,' + CUSTOM_FIELD_PULL_REQUESTS, {
-                dataType: 'json',
-                type: 'GET'
-            }).then(function(data) {
-                if (!data) {
-                    return;
-                }
-                if (!data.issues) {
-                    return;
-                }
-
-                data.issues.forEach(function(issue){
-                    var pullRequests = processPullRequests(issue.fields[CUSTOM_FIELD_PULL_REQUESTS]);
-
-                    if (pullRequests) {
-                        var $where = $issues.filter('[data-issue-key=' + issue.key + ']').append('<div class="pull-requests">');
-                        pullRequests.forEach(function(pullRequest) {
-
-                            $where.append('<a href="' + pullRequest.url + '" target="_blank">' +
-                                '<span data-pr="' + pullRequest.api + '" class="pull-request pull-request-unknown"></span>' +
-                                '</a>');
-
-                            $.ajax(pullRequest.api, {
-                                dataType: 'json',
-                                type: 'GET'
-                            }).then(function(data) {
-                                if (!data) { return; }
-
-                                $('[data-pr="' + pullRequest.api + '"')
-                                    .removeClass('pull-request-unknown')
-                                    .addClass('pull-request-' + data.state);
-                            }).fail(function(err) {
-                                if (err.status === 0) { return; }
-
-                                $('[data-pr="' + pullRequest.api + '"')
-                                    .removeClass('pull-request-unknown')
-                                    .addClass('pull-request-error');
-                            });
-                        });
+                $.ajax(API_URL + 'search?jql=issue%3D' + query + '%20AND%20(labels%20is%20not%20empty%20OR%20"Code%20Review%20URL(s)"%20is%20not%20EMPTY)&fields=labels,' + CUSTOM_FIELD_PULL_REQUESTS, {
+                    dataType: 'json',
+                    type: 'GET'
+                }).then(function(data) {
+                    if (!data) {
+                        return;
                     }
+                    if (!data.issues) {
+                        return;
+                    }
+
+                    data.issues.forEach(function(issue){
+                        var pullRequests = processPullRequests(issue.fields[CUSTOM_FIELD_PULL_REQUESTS]);
+
+                        if (pullRequests) {
+                            var $where = $issues.filter('[data-issue-key=' + issue.key + ']').append('<div class="pull-requests">');
+                            pullRequests.forEach(function(pullRequest) {
+
+                                $where.append('<a href="' + pullRequest.url + '" target="_blank">' +
+                                    '<span data-pr="' + pullRequest.api + '" class="pull-request pull-request-unknown"></span>' +
+                                    '</a>');
+
+                                $.ajax(pullRequest.api, {
+                                    dataType: 'json',
+                                    type: 'GET'
+                                }).then(function(data) {
+                                    if (!data) { return; }
+
+                                    $('[data-pr="' + pullRequest.api + '"')
+                                        .removeClass('pull-request-unknown')
+                                        .addClass('pull-request-' + data.state);
+                                }).fail(function(err) {
+                                    if (err.status === 0) { return; }
+
+                                    $('[data-pr="' + pullRequest.api + '"')
+                                        .removeClass('pull-request-unknown')
+                                        .addClass('pull-request-error');
+                                });
+                            });
+                        }
+                    });
                 });
-
-
-
-            });
+            }
 
             // must re-register in case of updates
             GH.CallbackManager.registerCallback(GH.WorkController.CALLBACK_POOL_RENDERED, 'SelectMostAppropriateIssueCallback', addFeatureNames);
