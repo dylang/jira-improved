@@ -1,0 +1,111 @@
+/*
+class="aui-label"
+*/
+
+.ghx-issue {
+    height: auto !important;;
+    margin-bottom: 2px !important;;
+    font-size: 12px !important;
+}
+
+
+.ghx-issue .ghx-grabber,
+.ghx-issue:first-child .ghx-grabber {
+    height: 100% !important;
+}
+
+.chrome .ghx-issue-fields .ghx-summary .ghx-inner,
+    .ghx-issue-fields .ghx-summary .ghx-inner {
+    height: auto !important;
+    margin-bottom: 10px;
+}
+
+
+.dylan {
+    overflow: hidden;
+    max-width: 100%;
+    transition: opacity 0.25s ease-in-out;
+    opacity: 0.7;
+
+    display: inline-block;
+    padding: 2px 4px;
+    font-size: 11.844px;
+    line-height: 14px;
+    color: #ffffff;
+    white-space: nowrap;
+    vertical-align: baseline;
+}
+
+.ghx-issue:hover .dylan,
+.dylan:hover {
+    opacity: 1;
+}
+
+.dylan .status {
+    font-weight: bold;
+    padding-right: 4px;
+}
+
+.ghx-issue .ghx-type {
+    height: auto !important;
+    overflow: auto !important;
+}
+
+
+.pull-request {
+    background-image: -webkit-image-set(
+      url(chrome-extension://__MSG_@@extension_id__/images/github-16.png) 1x,
+      url(chrome-extension://__MSG_@@extension_id__/images/github-32.png) 2x
+    );
+
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+
+    box-shadow: none;
+    transition: box-shadow 0.25s ease-in-out;
+}
+
+.pull-request:hover {
+    box-shadow: 0 0 5px 2px #9ecaed;
+}
+
+.pull-request-unknown {
+    opacity: 0.5;
+}
+
+.pull-request-error {
+    -webkit-filter: invert(1);
+}
+
+.pull-request-open {
+
+}
+
+.pull-request-closed {
+    -webkit-filter: hue-rotate(90deg);
+    opacity: 50%;
+}
+
+.ji-font-smaller {
+    font-size: 9px !important;
+}
+
+/**
+Try to make it so the whole page will scroll
+
+.ghx-column-header-group {
+    position: initial !important;
+}
+
+.ghx-work {
+    height: auto !important;
+}
+
+
+.ghx-scroll-columns, #ghx-plan, #ghx-report, #ghx-work {
+    overflow: visible !important;
+    height: auto !important;
+}
+
+**/
