@@ -144,6 +144,8 @@
 
     var matchUrls = new RegExp('((http|https):(([A-Za-z0-9$_.+!*(),;/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*(),;/?:@&~=%-]*))?([A-Za-z0-9$_+!*();/?:~-]))','g');
 
+    //var url = require('url');
+
     function processPullRequests(str) {
         if (!str || str.length === 0) { return; }
 
