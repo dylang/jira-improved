@@ -1,0 +1,12 @@
+'use strict';
+
+var CUSTOM_FIELD_EPIC_NAME = 'customfield_13259';
+var CUSTOM_FIELD_EPIC_PARENT = 'customfield_13258';
+var CUSTOM_FIELD_PULL_REQUESTS = 'customfield_13153';
+
+
+module.exports = {
+    EPIC_NAME: CUSTOM_FIELD_EPIC_NAME,
+    EPIC_PARENT: CUSTOM_FIELD_EPIC_PARENT,
+    PULL_REQUESTS: CUSTOM_FIELD_PULL_REQUESTS
+};

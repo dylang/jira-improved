@@ -10,16 +10,15 @@ var browserify = require('browserify');
 var jshint = require('gulp-jshint');
 var stylish = require('jshint-stylish');
 var zip = require('gulp-zip');
+var watch = require('gulp-watch');
 
-var browserSync = require('browser-sync');
+var livereload = require('gulp-livereload');
 
 gulp.task('browserify', function() {
     var bundler = watchify(browserify({
         entries: ['./src/js/content/improved'],
         debug: true}, watchify.args
     ));
-
-    //(process.cwd() + '/', watchify.args));
 
     // Optionally, you can apply transforms
     // and other configuration options on the
@@ -29,7 +28,8 @@ gulp.task('browserify', function() {
     function rebundle() {
         return bundler.bundle()
             .pipe(source('bundle.js'))
-            .pipe(gulp.dest('src/js/dist'));
+            .pipe(gulp.dest('src/js/dist'))
+            .pipe(livereload());
     }
 
     bundler
@@ -48,38 +48,29 @@ gulp.task('jshint', function(){
             'src/**/*.js',
             '!src/js/dist/**'
         ])
+        .pipe(watch())
         .pipe(jshint())
         .pipe(jshint.reporter(stylish));
 });
 
 
-gulp.task('browser-sync', ['browserify'], function() {
-    browserSync.init({
-        server: {
-            baseDir: ['src']
-        },
-        open: false
-    });
-});
-
 gulp.task('zip', function () {
 
-    var name = require('./src/manifest.json').name;
+    var name = require('./package.json').name;
 
-    return gulp.src(['src'])
+    return gulp.src(['./src/**'])
         //.pipe(debug({verbose: true}))
         .pipe(zip(name + '.zip', {compress: true}))
         //.pipe(debug({verbose: true}))
         .pipe(gulp.dest('zips'));
 });
 
+gulp.task('live-reload', livereload.listen);
 
-//gulp.task('build', ['jshint', 'browserify']);
 
-gulp.task('watch', ['browser-sync'], function() {
-    gulp.watch('src', ['jshint']);
-    gulp.watch('src/**/*.js', ['jshint', browserSync.reload]);
+gulp.task('watch',function() {
+    gulp.watch(['src/**', '!src/js/content/**']).on('change', livereload.changed);
 });
 
-gulp.task('default', ['watch']);
+gulp.task('default', ['live-reload', 'watch', 'jshint', 'browserify']);
 
