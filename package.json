@@ -1,13 +1,20 @@
 {
   "name": "jira-improved",
-  "version": "1.0.0",
+  "version": "1.0.7",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dylang/jira-improved.git"
+  },
   "dependencies": {},
   "devDependencies": {
     "browserify": "^5.10",
     "gulp": "^3.8",
+    "gulp-bump": "^0.1.11",
     "gulp-debug": "^1.0",
     "gulp-jshint": "^1.8",
+    "gulp-json-editor": "^2.0.2",
     "gulp-livereload": "^2.1",
+    "gulp-rename": "^1.2.0",
     "gulp-using": "0.0.1",
     "gulp-util": "^3.0",
     "gulp-watch": "^0.6.9",

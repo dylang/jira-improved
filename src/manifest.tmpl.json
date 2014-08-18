@@ -9,7 +9,7 @@
   },
   "default_locale": "en",
   "background": {
-    "scripts": ["js/background.js", "js/live-reload.js"]
+    "scripts": ["js/background.js"]
   },
   "page_action": {
     "default_icon": {

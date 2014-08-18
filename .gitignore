@@ -2,3 +2,4 @@
 /dist/
 /node_modules/
 /src/js/dist/
+/src/js/manifest.json
