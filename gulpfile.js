@@ -54,7 +54,7 @@ gulp.task('jshint', function(){
             'src/**/*.js',
             '!src/js/dist/**'
         ])
-        .pipe(watch())
+        .pipe(watch({name: 'jshint watch'}))
         .pipe(jshint())
         .pipe(jshint.reporter(stylish));
 });
