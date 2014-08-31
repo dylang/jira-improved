@@ -42,7 +42,9 @@ function decorate(data) {
 
     Object.keys(epics).forEach(function(epic) {
 
-        api.issue(epic + '?fields=summary,status,' + CUSTOMFIELDS.EPIC_NAME).then(function(data) {
+        var FIELDS = ['summary', 'status', CUSTOMFIELDS.EPIC_NAME];
+
+        api.issue(epic, FIELDS).then(function(data) {
             if (!data) { return; }
             if (!data.fields) { return; }
             if (!data.fields.status) { return; }
@@ -69,10 +71,13 @@ function decorate(data) {
 
     if (openTicketsToCheckForPRs.length) {
 
-        var query = openTicketsToCheckForPRs.join('%20OR%20issue%3D');
+        var query = {
+            maxResults: 500,
+            jql: 'issue=' + openTicketsToCheckForPRs.join(' OR issue=') + ' AND (labels is not empty OR "Code Review URL(s)" is not EMPTY)',
+            fields: ['labels', CUSTOMFIELDS.PULL_REQUESTS].join(',')
+        };
 
-
-        api.jql('jql=issue%3D' + query + '%20AND%20(labels%20is%20not%20empty%20OR%20"Code%20Review%20URL(s)"%20is%20not%20EMPTY)&fields=labels,' + CUSTOMFIELDS.PULL_REQUESTS).then(function(data) {
+        api.jql(query).then(function(data) {
             if (!data) {
                 return;
             }

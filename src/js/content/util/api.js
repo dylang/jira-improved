@@ -5,6 +5,7 @@ var API_URL = API_PREFIX + '/rest/api/2/';
 
 var page = require('../page');
 var $ = page.$;
+var querystring = require('querystring');
 
 function get(url) {
     return $.ajax(url,
@@ -14,12 +15,12 @@ function get(url) {
         });
 }
 
-function jql(search) {
-    return get(API_URL + 'search?' + search);
+function jql(query) {
+    return get(API_URL + 'search?' + querystring.stringify(query));
 }
 
-function issue(search) {
-    return get(API_URL + 'issue/' + search);
+function issue(issue, fields) {
+    return get(API_URL + 'issue/' + issue + '?' + querystring.stringify({fields: fields.join(',')}));
 }
 
 module.exports = {
