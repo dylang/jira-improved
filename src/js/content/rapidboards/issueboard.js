@@ -12,7 +12,6 @@ var STATUS_MAP = {
 };
 
 
-
 function decorate(data) {
     var issues = data.issuesData.issues;
     var $issues = $('.ghx-issue');
@@ -62,7 +61,7 @@ function decorate(data) {
                 .addClass('dylan')
                 .tipsy({opacity: 1})
                 .append('<span class="status">' + status + '</span>')
-                .append('<span class="summary">' + data.fields.summary + '</span>');
+                .append('<span class="summary">' + data.fields.summary + ' ' + epic + '</span>');
 
         });
     });

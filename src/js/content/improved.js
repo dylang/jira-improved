@@ -7,6 +7,7 @@ var epicboard = require('./rapidboards/epicboard');
 var issueboard = require('./rapidboards/issueboard');
 
 var emptyColumn = require('./ui/emptyColumn');
+var filter = require('./ui/filter');
 
 var page = require('./page');
 
@@ -40,4 +41,5 @@ function init() {
     update();
 }
 
+filter.init();
 page.changed(init);

@@ -91,6 +91,13 @@ class="aui-label"
     font-size: 9px !important;
 }
 
+.highlight {
+    color: black;
+    background-color: yellow;
+    box-shadow: -.166666667em 0 0 0 yellow, .166666667em 0 0 0 yellow;
+}
+
+
 /**
 Try to make it so the whole page will scroll
 

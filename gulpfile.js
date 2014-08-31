@@ -18,7 +18,7 @@ var rename = require('gulp-rename');
 var watch = require('gulp-watch');
 var livereload = require('gulp-livereload');
 
-var liveReloadEnabled;
+var chalk = require('chalk');
 
 gulp.task('browserify', function() {
     var bundler = watchify(browserify({
@@ -33,17 +33,17 @@ gulp.task('browserify', function() {
 
     function rebundle() {
         return bundler.bundle()
+            .on('error', function(e) {
+              gutil.log(chalk.red('Error: ' +  e.message));
+            })
             .pipe(source('bundle.js'))
             .pipe(gulp.dest('src/js/dist'))
             .pipe(livereload());
     }
 
     bundler
-        .on('update', rebundle)
-        // log errors if they happen
-        .on('error', function(e) {
-          gutil.log('Browserify Error', e);
-        });
+        .on('update', rebundle);
+        // log errors if they happen;
 
     return rebundle();
 });
@@ -88,6 +88,7 @@ gulp.task('manifest', ['bump'], function(){
 gulp.task('manifest-livereload', function(){
     return gulp.src('./src/manifest.tmpl.json')
         .pipe(jeditor(function(json){
+            json.version = Math.floor(Math.random() * 1000) + '' + require('./package.json').version;
             json.background.scripts.push('js/live-reload.js');
             return json;
         }))
@@ -98,9 +99,9 @@ gulp.task('manifest-livereload', function(){
 gulp.task('live-reload', livereload.listen);
 
 gulp.task('watch',function() {
-    liveReloadEnabled = true;
-    gulp.watch(['src/**', '!src/js/content/**'])
-        .on('change', livereload.changed);
+    watch({glob: ['src/**', '!src/js/content/**'], name: 'watch task' }, function(files) {
+        files.pipe(livereload({auto: false}));
+    });
 });
 
 gulp.task('default', ['live-reload', 'manifest-livereload', 'watch', 'jshint', 'browserify']);
