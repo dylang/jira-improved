@@ -13,13 +13,13 @@ var sizzleCustomizations = require('../util/sizzle-customizations');
 var $filter = $('<input>').addClass('filter').attr('placeholder', 'Filter');
 
 
-function filter() {
+function filter(force) {
 
     // need to re-find all the issues in case some filter was changed that altered what tickets are viewable
     var $items = $('.ghx-issue');
     var value = $filter.val().trim();
 
-    if (value === previousFilter && previousItems === $items.length) {
+    if (!force && value === previousFilter && previousItems === $items.length) {
         return;
     }
     console.log('FILTER ON ', value);
@@ -45,6 +45,13 @@ function filter() {
 }
 
 function init() {
+
+    var $whereToPutFilter = $('#js-quickfilters-label');
+
+    if (!$whereToPutFilter.length) {
+        setTimeout(init, 100);
+        return;
+    }
 
     // Add new jQuery filter for finding text anywhere
     sizzleCustomizations.addContainsAnywhere();

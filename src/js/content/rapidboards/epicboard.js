@@ -4,6 +4,7 @@ var CUSTOMFIELDS = require('../customfields');
 var api = require('../util/api');
 var page = require('../page');
 var $ = page.$;
+var filter = require('../ui/filter');
 
 function isEpic(issue) {
     return issue && (issue.typeName === 'Feature' || issue.typeName === 'Epic');
@@ -31,7 +32,7 @@ function getTickets(project, startAt) {
 
 
             var parentTicket = issue.fields[CUSTOMFIELDS.EPIC_PARENT];
-            //var summary = issue.fields.summary;
+            var summary = issue.fields.summary;
             var status = issue.fields.status.name;
             var color = issue.fields.status.statusCategory.colorName;
             var $parentTicket = $('[data-issue-key=' + parentTicket + ']');
@@ -45,24 +46,28 @@ function getTickets(project, startAt) {
             $tag.data('count', count).addClass('jira-issue-status-lozenge-' + color);
             $tag.html(count);
 
+            var $issue = '<a href="/browse/' + issue.key + '" target="_blank" ' +
+                        'class="' +
+                        'jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-' + color + ' jira-issue-status-lozenge-new  expanding-tag' +
+                        '">' +
+                         summary + ' - ' + issue.key + ' - ' + status + '</a>';
+
+            $parentTicket.find('.issues .issues-' + color)
+                .append($issue);
+
             //$parentTicket.append(trafficLight);
             /*
 
-            var tag = '<a href="/browse/' + issue.key + '" target="_blank" ' +
-                    'data-status="' + status + '" ' +
-                'class="' +
-                        'ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-' + color + ' jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short' +
-                        '" title="' + summary + '">' +
-                            '1 ' + status.substring(2, 0) + '</a>';
+            var tag = ;
             */
         });
 
 
         if (data.total > (data.maxResults + data.startAt)) {
             getTickets(project, data.maxResults + data.startAt);
-        } else {
-            $('a.aui-lozenge').tipsy({opacity: 1});
         }
+
+        filter.filter(true);
 
     });
 }
@@ -74,11 +79,18 @@ function decorate(data) {
     if (isEpic(issues[0])){
         var project = projectOfIssue(issues[0]);
 
-        $('.ghx-issue').append('<div class="traffic-light">' +
-            '<span class="blue-gray ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short"></span>' +
-            '<span class="yellow ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short"></span>' +
-            '<span class="green ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short"></span>' +
-        '</div>');
+        $('.ghx-issue')
+            .append('<div class="traffic-light">' +
+                '<span class="blue-gray ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short"></span>' +
+                '<span class="yellow ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short"></span>' +
+                '<span class="green ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short"></span>' +
+            '</div>')
+            .append('<div class="issues">' +
+                '<div class="issues-blue-gray"></div>' +
+                '<div class="issues-yellow"></div>' +
+                '<div class="issues-green"></div>' +
+            '</div>')
+        ;
 
 
         getTickets(project, 0);

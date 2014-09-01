@@ -17,11 +17,10 @@ class="aui-label"
 .chrome .ghx-issue-fields .ghx-summary .ghx-inner,
     .ghx-issue-fields .ghx-summary .ghx-inner {
     height: auto !important;
-    margin-bottom: 10px;
+    margin-bottom: 4px;
 }
 
-
-.dylan {
+.ghx-issue .epic-link {
     overflow: hidden;
     max-width: 100%;
     transition: opacity 0.25s ease-in-out;
@@ -29,19 +28,20 @@ class="aui-label"
 
     display: inline-block;
     padding: 2px 4px;
-    font-size: 11.844px;
-    line-height: 14px;
+    font-size: 9px;
+    line-height: 10px;
     color: #ffffff;
     white-space: nowrap;
     vertical-align: baseline;
+    text-overflow: ellipsis;
 }
 
-.ghx-issue:hover .dylan,
-.dylan:hover {
+.ghx-issue:hover .epic-link,
+.ghx-issue .epic-link:hover {
     opacity: 1;
 }
 
-.dylan .status {
+.ghx-issue .epic-link .status {
     font-weight: bold;
     padding-right: 4px;
 }
@@ -52,7 +52,7 @@ class="aui-label"
 }
 
 
-.pull-request {
+.ghx-issue .pull-request {
     background-image: -webkit-image-set(
       url(chrome-extension://__MSG_@@extension_id__/images/github-16.png) 1x,
       url(chrome-extension://__MSG_@@extension_id__/images/github-32.png) 2x
@@ -66,36 +66,86 @@ class="aui-label"
     transition: box-shadow 0.25s ease-in-out;
 }
 
-.pull-request:hover {
+.ghx-issue .pull-request:hover {
     box-shadow: 0 0 5px 2px #9ecaed;
 }
 
-.pull-request-unknown {
+.ghx-issue .pull-request-unknown {
     opacity: 0.5;
 }
 
-.pull-request-error {
+.ghx-issue .pull-request-error {
     -webkit-filter: invert(1);
 }
 
-.pull-request-open {
+.ghx-issue .pull-request-open {
 
 }
 
-.pull-request-closed {
+.ghx-issue .pull-request-closed {
     -webkit-filter: hue-rotate(90deg);
     opacity: 50%;
 }
 
-.ji-font-smaller {
+.ghx-issue .ji-font-smaller {
     font-size: 9px !important;
 }
 
-.highlight {
+.ghx-issue .kinda-hidden {
+    display: none;
+}
+
+.ghx-issue .highlight {
     color: black;
     background-color: yellow;
-    box-shadow: -.166666667em 0 0 0 yellow, .166666667em 0 0 0 yellow;
+    box-shadow:
+        0 2px 2px yellow,
+        0 0 4px 1px yellow !important;
+
 }
+
+.ghx-issue .expanding-tag {
+    border-radius: 3px;
+}
+
+.ghx-issue .expanding-tag:hover {
+    z-index: 10000;
+    position: relative;
+    max-width: none;
+    box-shadow:
+        0 2px 2px rgba(0,0,0,0.3),
+        0 0 4px 1px rgba(0,0,0,0.2);
+    text-decoration: none;
+}
+
+.ghx-issue .expanding-tag:hover .kinda-hidden {
+    display: inherit;
+}
+
+
+.ghx-issue .aui-lozenge {
+    font-weight: normal;
+    text-align: left;
+    text-transform: none;
+    width: auto;
+    max-width: 100%;
+}
+
+
+.ghx-issue .traffic-light {
+    margin-left: -20px;
+}
+
+.ghx-issue .issues {
+    display: none;
+    margin-left: -20px;
+    margin-right: 10px;
+}
+
+.ghx-issue:hover .issues {
+    display: block;
+}
+
 
 
 /**
