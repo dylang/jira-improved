@@ -4,14 +4,17 @@ class="aui-label"
 
 .ghx-issue {
     height: auto !important;;
-    margin-bottom: 2px !important;;
+    margin-bottom: 2px !important;
+    margin-left: 2px !important;
     font-size: 12px !important;
+    border-top: 4px solid #eee !important;
+    padding: 2px 0px 10px 25px !important;
 }
 
 
 .ghx-issue .ghx-grabber,
 .ghx-issue:first-child .ghx-grabber {
-    height: 100% !important;
+    display: none !important;
 }
 
 .chrome .ghx-issue-fields .ghx-summary .ghx-inner,
@@ -139,11 +142,17 @@ class="aui-label"
 .ghx-issue .issues {
     display: none;
     margin-left: -20px;
-    margin-right: 10px;
+    margin-right: 15px;
 }
 
 .ghx-issue:hover .issues {
     display: block;
+}
+
+.ghx-issue .epic-container,
+.ghx-issue .pull-requests {
+    margin-left: -20px;
+    margin-right: 15px;
 }
 
 
@@ -166,3 +175,65 @@ Try to make it so the whole page will scroll
 }
 
 **/
+
+#ghx-header {
+    padding: 2px 20px !important;
+}
+
+#ghx-column-headers {
+    padding-top: 5px !important;
+}
+
+.ghx-column-headers .ghx-column {
+    border-bottom-width: 1px !important;
+    padding: 0 10px 0 0 !important;
+}
+.ghx-controls-filters dt, .ghx-controls-filters dd {
+    margin: 0 0 2px 0 !important;
+}
+
+.ghx-controls-plan,
+.ghx-header-compact .ghx-controls-report,
+.ghx-controls-work {
+    min-height: initial;
+}
+
+.ghx-column-headers .ghx-release {
+    font-size: 9px;
+}
+
+.ghx-feedback.js-feedback-link {
+    display: none;
+}
+
+.ghx-qty {
+    font-weight: normal;
+    font-size: 9px;
+    background-color: #f5f5f5;
+    border-radius: 3px;
+    padding: 2px 4px 0 4px;
+}
+
+.ghx-column-headers h2 {
+    float: left;
+}
+
+.ghx-issue-fields .ghx-type {
+    left: 5px;
+    top: 3px;
+}
+
+.ghx-has-avatar .ghx-issue-fields,
+.ghx-has-corner .ghx-issue-fields {
+    padding-right: 41px !important;
+}
+
+.ghx-swimlane-header {
+    font-size: 12px;
+    line-height: 0.4em;
+}
+
+.ghx-swimlane-header .ghx-expander .ghx-iconfont {
+    margin-top: 6px !important;
+}
+
