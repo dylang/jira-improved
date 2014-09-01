@@ -43,7 +43,6 @@ function getTickets(project, startAt) {
 
 
         if (data.total > (data.maxResults + data.startAt)) {
-            console.log('data.maxResults + data.startAt', data.maxResults, data.startAt, data.maxResults + data.startAt)
             getTickets(project, data.maxResults + data.startAt);
         } else {
             $('a.aui-lozenge').tipsy({opacity: 1});

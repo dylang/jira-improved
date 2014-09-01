@@ -22,7 +22,7 @@ function containsAnywhere(elem, i, match) {
 
     // return if they ALL match
     var matches = searchFor.reduce(function(acc, val){
-        return acc && elementText.indexOf(val) >= 0
+        return acc && elementText.indexOf(val) >= 0;
     }, true);
 
     return matches;

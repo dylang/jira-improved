@@ -7,42 +7,15 @@ var previousFilter;
 var previousItems;
 
 
-var debounce = require('../util/debounce');
+//var debounce = require('../util/debounce');
 var sizzleCustomizations = require('../util/sizzle-customizations');
 
 var $filter = $('<input>').addClass('filter').attr('placeholder', 'Filter');
 
-function init() {
-
-    // Add new jQuery filter for finding text anywhere
-    sizzleCustomizations.addContainsAnywhere();
-
-    $filter
-        .on('keyup change', debounce(filter, 200))
-        .replaceAll('#js-quickfilters-label');
-
-    // Hotkey for `f`/ 'F'
-    $(window.document).bind('keyup', function(e) {
-        var KEY_F = 102;
-        var KEY_f = 70;
-
-        var $target = jQuery(e.target);
-        if (page.AJS.keyboardShortcutsDisabled || $target.is(':input')) {
-            return;
-        }
-
-        if (e.which === KEY_F || e.which === KEY_f) {
-            $filter.focus();
-            e.preventDefault();
-            return false;
-        }
-    });
-
-}
 
 function filter() {
 
-    // need to re-find all the issues incase some filter was changed that altered what tickets are viewable
+    // need to re-find all the issues in case some filter was changed that altered what tickets are viewable
     var $items = $('.ghx-issue');
     var value = $filter.val().trim();
 
@@ -69,6 +42,33 @@ function filter() {
     previousItems = $items.length;
 
     page.changed(filter);
+}
+
+function init() {
+
+    // Add new jQuery filter for finding text anywhere
+    sizzleCustomizations.addContainsAnywhere();
+
+    $filter
+        .on('keyup change', filter)
+        .replaceAll('#js-quickfilters-label');
+
+    // Hotkey for `f`/ 'F'
+    $(window.document).bind('keyup', function(e) {
+        var KEY_F = 102;
+        var KEY_f = 70;
+
+        var $target = $(e.target);
+        if (page.AJS.keyboardShortcutsDisabled || $target.is(':input')) {
+            return;
+        }
+
+        if (e.which === KEY_F || e.which === KEY_f) {
+            $filter.focus();
+            e.preventDefault();
+            return false;
+        }
+    });
 }
 
 module.exports = {

@@ -27,7 +27,17 @@ function updateLastColumn() {
 
 }
 
+function init(){
+    $('.js-parent-drag')
+        .draggable({
+            distance: 2,
+            start: showLastColumn,
+            stop: updateLastColumn
+        });
+}
+
 module.exports = {
+    init: init,
     hide: hideLastColumn,
     show: showLastColumn,
     update: updateLastColumn

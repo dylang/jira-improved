@@ -19,8 +19,8 @@ function jql(query) {
     return get(API_URL + 'search?' + querystring.stringify(query));
 }
 
-function issue(issue, fields) {
-    return get(API_URL + 'issue/' + issue + '?' + querystring.stringify({fields: fields.join(',')}));
+function issue(issue_id, fields) {
+    return get(API_URL + 'issue/' + issue_id + '?' + querystring.stringify({fields: fields.join(',')}));
 }
 
 module.exports = {

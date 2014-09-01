@@ -8,14 +8,11 @@ var issueboard = require('./rapidboards/issueboard');
 
 var emptyColumn = require('./ui/emptyColumn');
 var filter = require('./ui/filter');
+var fixUI = require('./ui/fix-ui');
 
 var page = require('./page');
 
 var GH = page.GH;
-var $ = page.$;
-
-// i forget what this is for - should d be there?
-$('.ghx-scroll-coldumns').removeClass('ghx-scroll-coldumns');
 
 function update () {
 
@@ -31,13 +28,8 @@ function update () {
 }
 
 function init() {
-    $('.js-parent-drag')
-        .draggable({
-            distance: 2,
-            start: emptyColumn.show,
-            stop: emptyColumn.update
-        });
-
+    fixUI();
+    emptyColumn.init();
     update();
 }
 
