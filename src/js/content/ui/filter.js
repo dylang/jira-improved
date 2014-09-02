@@ -16,6 +16,9 @@ var $filter = $('<input>').addClass('filter').attr('placeholder', 'Filter');
 function filter(force) {
 
     // need to re-find all the issues in case some filter was changed that altered what tickets are viewable
+    //.ghx-swimlane.ghx-closed .ghx-columns .ghx-issue,
+    //.ghx-swimlane.ghx-closed .ghx-columns .ghx-parent-group {
+
     var $items = $('.ghx-issue');
     var value = $filter.val().trim();
 
@@ -36,8 +39,8 @@ function filter(force) {
         });
     }
 
-    $items.not($matches).hide();
-    $matches.show();
+    $items.not($matches).addClass('hidden');
+    $matches.removeClass('hidden');
     previousFilter = value;
     previousItems = $items.length;
 
