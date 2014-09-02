@@ -4,6 +4,7 @@ class="aui-label"
 
 .ghx-issue {
     height: auto !important;;
+    min-height: 71px;
     margin-bottom: 2px !important;
     margin-left: 2px !important;
     margin-right: 1px !important;
