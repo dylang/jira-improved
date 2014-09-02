@@ -3,42 +3,47 @@
 var page = require('../page');
 var $ = page.$;
 
+var $lastColumns;
+var $lastColumnHeader;
 
-var $lastColumns = $('.ghx-columns li:last-child');
-var $lastColumnHeader = $('.ghx-column-headers li:last-child');
 
-function hideLastColumn() {
+function hide() {
     $lastColumnHeader.hide();
     $lastColumns.hide();
 }
 
-function showLastColumn() {
+function show() {
     $lastColumns.show();
     $lastColumnHeader.show();
 }
 
-function updateLastColumn() {
+function update() {
     // if Hide Done is clicked, hide the last column.
     if ($lastColumns.has('div').length === 0) {
-        hideLastColumn();
+        hide();
     } else {
-        showLastColumn();
+        show();
     }
+
+    page.changed(update);
 
 }
 
 function init(){
+
+    $lastColumns = $('.ghx-columns li:last-child');
+    $lastColumnHeader = $('.ghx-column-headers li:last-child');
+
     $('.js-parent-drag')
         .draggable({
             distance: 2,
-            start: showLastColumn,
-            stop: updateLastColumn
+            start: show,
+            stop: update
         });
+
+    update();
 }
 
 module.exports = {
-    init: init,
-    hide: hideLastColumn,
-    show: showLastColumn,
-    update: updateLastColumn
+    init: init
 };

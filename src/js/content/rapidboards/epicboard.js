@@ -43,8 +43,12 @@ function getTickets(project, startAt) {
                 console.log(color, status);
             }
             var count = ($tag.data('count') || 0) + 1;
-            $tag.data('count', count).addClass('jira-issue-status-lozenge-' + color);
-            $tag.html(count);
+            $tag
+                .data('count', count)
+                .addClass('jira-issue-status-lozenge-' + color)
+                .html(count);
+
+            $tag.parent('.hidden').removeClass('hidden');
 
             var $issue = '<a href="/browse/' + issue.key + '" target="_blank" ' +
                         'class="' +
@@ -65,6 +69,9 @@ function getTickets(project, startAt) {
 
         if (data.total > (data.maxResults + data.startAt)) {
             getTickets(project, data.maxResults + data.startAt);
+        } else {
+            // remove rest of hidden traffic lights
+            $('.traffic-light.hidden').removeClass('hidden');
         }
 
         filter.filter(true);
@@ -80,7 +87,7 @@ function decorate(data) {
         var project = projectOfIssue(issues[0]);
 
         $('.ghx-issue')
-            .append('<div class="traffic-light">' +
+            .append('<div class="traffic-light hidden">' +
                 '<span class="blue-gray ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short"></span>' +
                 '<span class="yellow ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short"></span>' +
                 '<span class="green ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short"></span>' +

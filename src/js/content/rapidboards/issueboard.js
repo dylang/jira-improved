@@ -32,7 +32,7 @@ function decorate(data) {
         }
 
         var $issue = $issues.filter('[data-issue-key=' + issue.key + ']');
-        $issue.find('.ghx-flags').hide();
+
         if (issue.epic) {
             epics[issue.epic] = epics[issue.epic] || issue.epic;
             $issue.append('<div class="epic-container"><a href="/browse/' + issue.epic + '" target="_blank" data-epic="' + issue.epic + '"></a></div>');
@@ -61,9 +61,8 @@ function decorate(data) {
                 .addClass('ghx-label-' + data.fields.status.statusCategory.id)
                 .addClass('epic-link')
                 .addClass('expanding-tag')
-                .append('<span class="status">' + status + '</span>')
                 .append('<span class="summary">' + data.fields.summary + '</span>')
-                .append('<span class="kinda-hidden"> - ' + epic + '</span>');
+                .append('<span class="kinda-hidden"> - ' + epic + ' - ' + status + '</span>');
 
         });
     });

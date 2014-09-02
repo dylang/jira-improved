@@ -8,7 +8,7 @@ class="aui-label"
     margin-left: 2px !important;
     font-size: 12px !important;
     border-top: 4px solid #eee !important;
-    padding: 2px 0px 10px 25px !important;
+    padding: 3px 0px 10px 25px !important;
 }
 
 
@@ -45,8 +45,6 @@ class="aui-label"
 }
 
 .ghx-issue .epic-link .status {
-    font-weight: bold;
-    padding-right: 4px;
 }
 
 .ghx-issue .ghx-type {
@@ -237,3 +235,11 @@ Try to make it so the whole page will scroll
     margin-top: 6px !important;
 }
 
+.ghx-controls-filters dd a {
+    padding: 4px 10px;
+}
+
+.ghx-columns .ghx-flags,
+.ghx-columns .ghx-priority {
+    display: none;
+}

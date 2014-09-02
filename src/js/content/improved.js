@@ -16,8 +16,6 @@ var GH = page.GH;
 
 function update () {
 
-    emptyColumn.update();
-
     // make sure this is using the same data
     GH.WorkDataLoader.getData(page.rapidViewID).then(function(data) {
         epicboard.decorate(data);

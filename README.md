@@ -2,28 +2,30 @@
 
 #### Improves the Agile and Kanban boards!
 
+ * Text filtering on every board *Hotkey: `f`*
+ * Hide the Done column if you use a quick filter to hide those tickets. 
+ * Shorter page headers to give more room to the boards.
+
 ### Epic Board Improved
 
 ![screen shot 2014-08-18 at 10 43 23 am](https://cloud.githubusercontent.com/assets/51505/3952810/09ab6868-26e6-11e4-937e-65a1abe4db53.png)
 
-* Show status for every issue in the feature.
-* Each status links to the issues.
-* Hide the Done column if you use a quick filter to hide those tickets. 
+ * Issue count for Blue: `Backlog`, Yellow: `In Progress`, Green: `Closed`.
+ * Hover over Epic to see every issue assigned to that Epic.
+ * Click on an issue to jump to that issue.
 
 ### Issue Board Improved
 
 ![screen shot 2014-08-18 at 10 43 01 am](https://cloud.githubusercontent.com/assets/51505/3952812/0b41ad40-26e6-11e4-98b4-6448ac0cb5b7.png)
 
-* Showing the Epic name in the cards 
-* Show a Github icon for every PR assocated with the ticket.
-* Highlight closed PR's in green.
-* Hide the Done column if you use a quick filter to hide those tickets. 
-
+ * See what Epic issues are part of.
+ * Red: `Backlog`. Blue: `In Progress`. Green: `Done`. 
+ * Show a Github icon for every PR associated with the ticket.
+ * Closed PR's are colored green.
 
 ### Add to Chrome
 
 [Add to Chrome](https://chrome.google.com/webstore/detail/jira-improved/mdfbpeoaadkecmpingophakekbicinip)
-
 
 ### Building locally
 
