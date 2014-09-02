@@ -6,6 +6,7 @@ class="aui-label"
     height: auto !important;;
     margin-bottom: 2px !important;
     margin-left: 2px !important;
+    margin-right: 1px !important;
     font-size: 12px !important;
     border-top: 4px solid #eee !important;
     padding: 3px 0px 10px 25px !important;
@@ -14,7 +15,8 @@ class="aui-label"
 
 .ghx-issue .ghx-grabber,
 .ghx-issue:first-child .ghx-grabber {
-    display: none !important;
+    height: 100%;
+    width: 2px;
 }
 
 .chrome .ghx-issue-fields .ghx-summary .ghx-inner,
