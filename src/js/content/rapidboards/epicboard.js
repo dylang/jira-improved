@@ -1,4 +1,5 @@
 'use strict';
+var escape = require('escape-html');
 
 var CUSTOMFIELDS = require('../customfields');
 var api = require('../util/api');
@@ -54,7 +55,7 @@ function getTickets(project, startAt) {
                         'class="' +
                         'jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-' + color + ' jira-issue-status-lozenge-new  expanding-tag' +
                         '">' +
-                         summary + ' - ' + issue.key + ' - ' + status + '</a>';
+                        escape(summary) + ' - ' + issue.key + ' - ' + status + '</a>';
 
             $parentTicket.find('.issues .issues-' + color)
                 .append($issue);

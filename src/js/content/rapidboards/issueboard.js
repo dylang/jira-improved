@@ -1,5 +1,7 @@
 'use strict';
 
+var escape = require('escape-html');
+
 var CUSTOMFIELDS = require('../customfields');
 var api = require('../util/api');
 var page = require('../page');
@@ -61,7 +63,7 @@ function decorate(data) {
                 .addClass('ghx-label-' + data.fields.status.statusCategory.id)
                 .addClass('epic-link')
                 .addClass('expanding-tag')
-                .append('<span class="summary">' + data.fields.summary + '</span>')
+                .append('<span class="summary">' + escape(data.fields.summary) + '</span>')
                 .append('<span class="kinda-hidden"> - ' + epic + ' - ' + status + '</span>');
 
         });
