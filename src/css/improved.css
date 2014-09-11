@@ -101,10 +101,10 @@ class="aui-label"
 
 .ghx-issue .highlight {
     color: black;
-    background-color: yellow;
+    background-color: rgba(255,196,13, 0.2);
     box-shadow:
-        0 2px 2px yellow,
-        0 0 4px 1px yellow !important;
+        0 2px 2px rgba(255,196,13, 0.2),
+        0 0 4px 1px rgba(255,196,13, 0.2) !important;
 
 }
 

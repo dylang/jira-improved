@@ -6,7 +6,7 @@ console.log('(((============ JIRA IMPROVED ' + manifest.version + ' ADDED ======
 var epicboard = require('./rapidboards/epicboard');
 var issueboard = require('./rapidboards/issueboard');
 
-var emptyColumn = require('./ui/emptyColumn');
+//var emptyColumn = require('./ui/emptyColumn');
 var filter = require('./ui/filter');
 
 var page = require('./page');
@@ -25,7 +25,7 @@ function update () {
 }
 
 function init() {
-    emptyColumn.init();
+    ///emptyColumn.init();
     update();
 }
 

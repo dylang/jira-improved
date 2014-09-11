@@ -49,12 +49,11 @@ gulp.task('browserify', function() {
 });
 
 gulp.task('jshint', function(){
-    return gulp.src([
+    return watch([
             'gulpfile.js',
             'src/**/*.js',
             '!src/js/dist/**'
         ])
-        .pipe(watch({name: 'jshint watch'}))
         .pipe(jshint())
         .pipe(jshint.reporter(stylish));
 });
@@ -99,8 +98,8 @@ gulp.task('manifest-livereload', function(){
 gulp.task('live-reload', livereload.listen);
 
 gulp.task('watch',function() {
-    watch({glob: ['src/**', '!src/js/content/**'], name: 'watch task' }, function(files) {
-        files.pipe(livereload({auto: false}));
+    watch(['src/**', '!src/js/content/**'], function(files, cb) {
+        files.pipe(livereload({auto: false}), cb);
     });
 });
 

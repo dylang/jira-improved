@@ -11,7 +11,8 @@ function get(url) {
     return $.ajax(url,
         {
             dataType: 'json',
-            type: 'GET'
+            type: 'GET',
+            cache: true
         });
 }
 
