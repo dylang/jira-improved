@@ -5,11 +5,11 @@ class="aui-label"
 .ghx-issue {
     height: auto !important;;
     min-height: 71px;
+    margin-top: 3px !important;
     margin-bottom: 2px !important;
     margin-left: 2px !important;
     margin-right: 1px !important;
     font-size: 12px !important;
-    border-top: 4px solid #eee !important;
     padding: 3px 0px 2px 25px !important;
 }
 
@@ -55,13 +55,8 @@ class="aui-label"
     overflow: auto !important;
 }
 
-
-.ghx-issue .pull-request {
-    background-image: -webkit-image-set(
-      url(chrome-extension://__MSG_@@extension_id__/images/github-16.png) 1x,
-      url(chrome-extension://__MSG_@@extension_id__/images/github-32.png) 2x
-    );
-
+.ghx-issue .pull-request,
+.ghx-issue .pull-request-other {
     width: 16px;
     height: 16px;
     display: inline-block;
@@ -70,6 +65,19 @@ class="aui-label"
     transition: box-shadow 0.25s ease-in-out;
 }
 
+.ghx-issue .pull-request-other img {
+    width: 16px;
+    height: 16px;
+}
+
+.ghx-issue .pull-request {
+    background-image: -webkit-image-set(
+      url(chrome-extension://__MSG_@@extension_id__/images/github-16.png) 1x,
+      url(chrome-extension://__MSG_@@extension_id__/images/github-32.png) 2x
+    );
+}
+
+.ghx-issue .pull-request-other:hover,
 .ghx-issue .pull-request:hover {
     box-shadow: 0 0 5px 2px #9ecaed;
 }
@@ -90,6 +98,7 @@ class="aui-label"
     -webkit-filter: hue-rotate(90deg);
     opacity: 50%;
 }
+
 
 .ghx-issue .ji-font-smaller {
     font-size: 9px !important;

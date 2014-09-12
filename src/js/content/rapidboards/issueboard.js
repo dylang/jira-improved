@@ -93,23 +93,33 @@ function decorate(data) {
                     var $where = $('<div class="pull-requests">').appendTo($issues.filter('[data-issue-key=' + issue.key + ']'));
                     pullRequests.forEach(function(pullRequest) {
 
-                        $where.append('<a href="' + pullRequest.url + '" target="_blank" title="' + pullRequest.url + '" ' +
-                            ' data-pr="' + pullRequest.api + '" class="pull-request pull-request-unknown">' +
-                            '</a>');
+                        if (pullRequest.api) {
+                            $where.append('<a href="' + pullRequest.url + '" target="_blank" title="' + pullRequest.url + '" ' +
+                                ' data-pr="' + pullRequest.api + '" class="pull-request pull-request-unknown">' +
+                                '</a>');
 
-                        api.get(pullRequest.api).then(function(data) {
-                            if (!data) { return; }
+                            api.get(pullRequest.api).then(function(data) {
+                                if (!data) { return; }
 
-                            $('[data-pr="' + pullRequest.api + '"')
-                                .removeClass('pull-request-unknown')
-                                .addClass('pull-request-' + data.state);
-                        }).fail(function(err) {
-                            if (err.status === 0) { return; }
+                                $('[data-pr="' + pullRequest.api + '"')
+                                    .removeClass('pull-request-unknown')
+                                    .addClass('pull-request-' + data.state);
+                            }).fail(function(err) {
+                                if (err.status === 0) { return; }
 
-                            $('[data-pr="' + pullRequest.api + '"')
-                                .removeClass('pull-request-unknown')
-                                .addClass('pull-request-error');
-                        });
+                                $('[data-pr="' + pullRequest.api + '"')
+                                    .removeClass('pull-request-unknown')
+                                    .addClass('pull-request-error');
+                            });
+                        }
+
+                        if (pullRequest.favIcon) {
+                            $where.append('<a href="' + pullRequest.url + '" target="_blank" title="' + pullRequest.url + '" ' +
+                                'class="pull-request-other">' +
+                                '<img src="' + pullRequest.favIcon + '">' +
+                                '</a>');
+                        }
+
                     });
                 }
             });
