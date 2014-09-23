@@ -94,6 +94,10 @@ class="aui-label"
 
 }
 
+.ghx-issue .pull-request-unmerged {
+    -webkit-filter: hue-rotate(-25deg) saturate(800%);
+}
+
 .ghx-issue .pull-request-closed {
     -webkit-filter: hue-rotate(90deg);
     opacity: 50%;

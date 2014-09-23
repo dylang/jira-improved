@@ -100,10 +100,13 @@ function decorate(data) {
 
                             api.get(pullRequest.api).then(function(data) {
                                 if (!data) { return; }
-
+                                var state = data.state;
+                                if(state === "closed" && data.merged !== true){
+                                    state = "unmerged";
+                                }
                                 $('[data-pr="' + pullRequest.api + '"')
                                     .removeClass('pull-request-unknown')
-                                    .addClass('pull-request-' + data.state);
+                                    .addClass('pull-request-' + state);
                             }).fail(function(err) {
                                 if (err.status === 0) { return; }
 
