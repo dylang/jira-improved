@@ -1,31 +1,52 @@
 {
   "name": "jira-improved",
-  "version": "1.2.8",
+  "description": "Chrome plugin for improving Jira Kanban and Agile views.",
+  "version": "1.2.9",
+  "scripts": {
+    "test": "gulp test",
+    "build": "gulp build"
+  },
+  "keywords": [
+    "jira",
+    "kanban",
+    "agile",
+    "chrome extension",
+    "chrome plugin"
+  ],
+  "author": {
+    "name": "Dylan Greene",
+    "email": "dylang@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/dylang/jira-improved/issues"
+  },
+  "homepage": "https://github.com/dylang/jira-improved",
   "repository": {
     "type": "git",
     "url": "https://github.com/dylang/jira-improved.git"
   },
   "dependencies": {},
   "devDependencies": {
-    "get-urls": "^2.0.0",
-    "browserify": "^5.10",
+    "browserify": "^6.3.2",
     "chalk": "^0.5.1",
     "escape-html": "^1.0.1",
-    "gulp": "^3.8",
+    "get-urls": "^2.0.0",
+    "gulp": "^3.8.10",
     "gulp-bump": "^0.1.11",
     "gulp-debug": "^1.0",
-    "gulp-jshint": "^1.8",
-    "gulp-json-editor": "^2.0.2",
+    "gulp-jshint": "^1.9.0",
+    "gulp-json-editor": "^2.2.1",
     "gulp-livereload": "^2.1",
     "gulp-rename": "^1.2.0",
     "gulp-util": "^3.0",
-    "gulp-watch": "^1.0.2",
+    "gulp-watch": "^2.0.0",
     "gulp-zip": "^2.0",
     "jshint-stylish": "^0.4",
     "vinyl-source-stream": "^1.0.0",
-    "watchify": "^1.0"
+    "watchify": "^2.1.1"
   },
   "engines": {
     "node": ">=0.10.0"
-  }
+  },
+  "license": "MIT"
 }

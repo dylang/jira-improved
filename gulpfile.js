@@ -48,9 +48,18 @@ gulp.task('browserify', function() {
     return rebundle();
 });
 
-gulp.task('jshint', function(){
+gulp.task('jshint-watch', function(){
     return watch([
             'gulpfile.js',
+            'src/**/*.js',
+            '!src/js/dist/**'
+        ])
+        .pipe(jshint())
+        .pipe(jshint.reporter(stylish));
+});
+
+gulp.task('jshint', function(){
+    return gulp.src(['gulpfile.js',
             'src/**/*.js',
             '!src/js/dist/**'
         ])
@@ -103,5 +112,6 @@ gulp.task('watch',function() {
     });
 });
 
-gulp.task('default', ['live-reload', 'manifest-livereload', 'watch', 'jshint', 'browserify']);
+gulp.task('test', ['jshint']);
+gulp.task('default', ['live-reload', 'manifest-livereload', 'watch', 'jshint-watch', 'browserify']);
 gulp.task('build', ['zip']);

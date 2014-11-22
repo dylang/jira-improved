@@ -1,6 +1,6 @@
 {
   "name": "__MSG_appName__",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "manifest_version": 2,
   "description": "__MSG_appDescription__",
   "icons": {
@@ -9,7 +9,9 @@
   },
   "default_locale": "en",
   "background": {
-    "scripts": ["js/background.js"]
+    "scripts": [
+      "js/background.js"
+    ]
   },
   "page_action": {
     "default_icon": {
@@ -24,10 +26,19 @@
     "keyword": "Jira Improved"
   },
   "content_scripts": [{
-    "matches": ["https://*/secure/RapidBoard.jspa*", "https://*/jira/secure/RapidBoard.jspa*"],
-    "js": ["js/content-script.js"],
+    "matches": [
+      "https://*/secure/RapidBoard.jspa*",
+      "https://*/jira/secure/RapidBoard.jspa*"
+    ],
+    "js": [
+      "js/content-script.js"
+    ],
     "run_at": "document_end",
     "all_frames": false
   }],
-  "web_accessible_resources": ["images/*.png", "css/*.css", "js/dist/*.js"]
+  "web_accessible_resources": [
+    "images/*.png",
+    "css/*.css",
+    "js/dist/*.js"
+  ]
 }

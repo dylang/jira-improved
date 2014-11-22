@@ -4,7 +4,7 @@ class="aui-label"
 
 .ghx-issue {
     height: auto !important;;
-    min-height: 71px;
+    min-height: 31px;
     margin-top: 3px !important;
     margin-bottom: 2px !important;
     margin-left: 2px !important;
@@ -165,6 +165,14 @@ class="aui-label"
     margin-right: 15px;
 }
 
+.ghx-issue .ghx-issue-content {
+    padding: 2px;
+    min-height: 0;
+}
+
+.ghx-days {
+    margin-top: 5px;
+}
 
 
 /**
@@ -251,7 +259,13 @@ Try to make it so the whole page will scroll
     padding: 4px 10px;
 }
 
-.ghx-columns .ghx-flags,
-.ghx-columns .ghx-priority {
-    display: none;
+.ghx-issue .ghx-flags {
+    left: 5px;
+    position: absolute;
+    top: 22px;
+    opacity: 0.3;
+}
+
+.ghx-issue:hover .ghx-flags {
+    opacity: 1;
 }
