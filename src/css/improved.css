@@ -171,7 +171,9 @@ class="aui-label"
 }
 
 .ghx-days {
-    margin-top: 5px;
+    position: relative;
+    width: inherit;
+    margin-left: -35px;
 }
 
 
