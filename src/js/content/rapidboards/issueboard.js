@@ -37,7 +37,7 @@ function decorate(data) {
 
         if (issue.epic) {
             epics[issue.epic] = epics[issue.epic] || issue.epic;
-            $issue.append('<div class="epic-container"><a href="/browse/' + issue.epic + '" target="_blank" data-epic="' + issue.epic + '"></a></div>');
+            $issue.find('.ghx-summary').after('<div class="epic-container"><a href="/browse/' + issue.epic + '" target="_blank" data-epic="' + issue.epic + '"></a></div>');
         }
     });
 

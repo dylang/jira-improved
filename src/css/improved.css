@@ -11,8 +11,15 @@ class="aui-label"
     margin-right: 1px !important;
     font-size: 12px !important;
     padding: 3px 0px 2px 25px !important;
+    display: block;
+    line-height: 1.1em;
 }
 
+
+.ghx-issue-fields .ghx-key {
+    margin-top: 3px !important;
+    margin-bottom: 2px !important;
+}
 
 .ghx-issue .ghx-grabber,
 .ghx-issue:first-child .ghx-grabber {
@@ -24,6 +31,8 @@ class="aui-label"
     .ghx-issue-fields .ghx-summary .ghx-inner {
     height: auto !important;
     margin-bottom: 4px;
+    display: inherit;
+    overflow: inherit !important;
 }
 
 .ghx-issue .epic-link {
@@ -153,6 +162,7 @@ class="aui-label"
     display: none;
     margin-left: -20px;
     margin-right: 15px;
+    line-height: 1.5em;
 }
 
 .ghx-issue:hover .issues {
@@ -245,7 +255,18 @@ Try to make it so the whole page will scroll
 
 .ghx-has-avatar .ghx-issue-fields,
 .ghx-has-corner .ghx-issue-fields {
-    padding-right: 41px !important;
+    padding-right: 0 !important;
+}
+
+.ghx-band-1 .ghx-avatar,
+.ghx-band-2 .ghx-avatar,
+.ghx-avatar {
+    float: right;
+    margin-right: 5px;
+    position: relative;
+    top: 0;
+    right: 0;
+    left: 0;
 }
 
 .ghx-swimlane-header {
@@ -270,4 +291,9 @@ Try to make it so the whole page will scroll
 
 .ghx-issue:hover .ghx-flags {
     opacity: 1;
+}
+
+.ghx-issue .ghx-corner,
+.ghx-issue .ghx-corner .aui-badge{
+    min-width: 1ch !important;
 }

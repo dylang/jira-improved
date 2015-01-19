@@ -20,15 +20,31 @@ function faviconUrl (urlStr) {
     });
 
     if (urlObj.host === 'src.va.opower.it') {
-        backupFavIcon = 'https://src.va.opower.it/static/mx7kwf/images/favicon.ico';
+        return 'http://marketplace.servicerocket.com/static/products/atlassian/logoCruciblePNG.png'
+        //return 'https://src.va.opower.it/static/mx7kwf/images/favicon.ico';
     }
 
-    var favIcon = url.format({
+    var favIconNotWorking = url.format({
         protocol: 'https',
         host: 'getfavicon.appspot.com',
         pathname: hostname,
         search: 'defaulticon=' + backupFavIcon
     });
+
+
+    //https://favatar.mention.com/
+    var favIcon = url.format({
+        protocol: 'https',
+        host: 'favatar.mention.com',
+        pathname: 'image',
+        query: {
+            url: hostname,
+            format: 'image',
+            api_key: 'favatardemokey',
+            default: backupFavIcon
+        }
+    });
+
 
     return favIcon;
 }

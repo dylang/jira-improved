@@ -8,6 +8,7 @@ var issueboard = require('./rapidboards/issueboard');
 
 //var emptyColumn = require('./ui/emptyColumn');
 var filter = require('./ui/filter');
+var avatar = require('./ui/avatar');
 
 var page = require('./page');
 
@@ -26,6 +27,7 @@ function update () {
 
 function init() {
     ///emptyColumn.init();
+    avatar.init();
     update();
 }
 
