@@ -31,13 +31,27 @@ function getTickets(project, startAt) {
 
         data.issues.forEach(function(issue){
 
-
             var parentTicket = issue.fields[CUSTOMFIELDS.EPIC_PARENT];
             var summary = issue.fields.summary;
             var status = issue.fields.status.name;
             var color = issue.fields.status.statusCategory.colorName;
             var $parentTicket = $('[data-issue-key=' + parentTicket + ']');
 
+
+            if (!$parentTicket.hasClass('improved')) {
+                $parentTicket
+                    .addClass('improved')
+                    .append('<div class="traffic-light hidden">' +
+                        '<span class="blue-gray ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short"></span>' +
+                        '<span class="yellow ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short"></span>' +
+                        '<span class="green ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short"></span>' +
+                        '</div>')
+                    .append('<div class="issues">' +
+                        '<div class="issues-blue-gray"></div>' +
+                        '<div class="issues-yellow"></div>' +
+                        '<div class="issues-green"></div>' +
+                        '</div>');
+            }
 
             var $tag = $parentTicket.find('.traffic-light .' + color);
             if (!$tag.length) {
@@ -52,10 +66,14 @@ function getTickets(project, startAt) {
             $tag.parent('.hidden').removeClass('hidden');
 
             var $issue = '<a href="/browse/' + issue.key + '" target="_blank" ' +
-                        'class="' +
-                        'jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-' + color + ' jira-issue-status-lozenge-new  expanding-tag' +
-                        '">' +
-                        escape(summary) + ' - ' + issue.key + ' - ' + status + '</a>';
+                'data-issue-key="'+ issue.key + '"' +
+                'class="' +
+                'jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-' + color + ' jira-issue-status-lozenge-new' +
+                '">' +
+                status + ' - ' +  issue.key + ' - ' + escape(summary) + '</a>';
+
+            // remove duplicate which can happen during drag/drop
+            $parentTicket.find('[data-issue-key='+ issue.key + ']').remove();
 
             $parentTicket.find('.issues .issues-' + color)
                 .append($issue);
@@ -87,18 +105,7 @@ function decorate(data) {
     if (isEpic(issues[0])){
         var project = projectOfIssue(issues[0]);
 
-        $('.ghx-issue')
-            .append('<div class="traffic-light hidden">' +
-                '<span class="blue-gray ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short"></span>' +
-                '<span class="yellow ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short"></span>' +
-                '<span class="green ji-font-smaller jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-new jira-issue-status-lozenge-max-width-short"></span>' +
-            '</div>')
-            .append('<div class="issues">' +
-                '<div class="issues-blue-gray"></div>' +
-                '<div class="issues-yellow"></div>' +
-                '<div class="issues-green"></div>' +
-            '</div>')
-        ;
+
 
 
         getTickets(project, 0);

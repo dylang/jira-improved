@@ -10,7 +10,6 @@ function init() {
         var $avatar = $(el);
         var $parent = $avatar.parent('.ghx-has-avatar');
         $avatar.prependTo($parent);
-        console.log('avatar moved');
     });
 }
 
