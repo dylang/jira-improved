@@ -20,17 +20,17 @@ function faviconUrl (urlStr) {
     });
 
     if (urlObj.host === 'src.va.opower.it') {
-        return 'http://marketplace.servicerocket.com/static/products/atlassian/logoCruciblePNG.png'
-        //return 'https://src.va.opower.it/static/mx7kwf/images/favicon.ico';
+        return 'http://marketplace.servicerocket.com/static/products/atlassian/logoCruciblePNG.png';
     }
 
+    /*
     var favIconNotWorking = url.format({
         protocol: 'https',
         host: 'getfavicon.appspot.com',
         pathname: hostname,
         search: 'defaulticon=' + backupFavIcon
     });
-
+    */
 
     //https://favatar.mention.com/
     var favIcon = url.format({
