@@ -15,7 +15,7 @@ var page = require('./page');
 var GH = page.GH;
 
 function update () {
-
+    avatar.update();
     // make sure this is using the same data
     GH.WorkDataLoader.getData(page.rapidViewID).then(function(data) {
         epicboard.decorate(data);
@@ -27,7 +27,6 @@ function update () {
 
 function init() {
     ///emptyColumn.init();
-    avatar.init();
     update();
 }
 

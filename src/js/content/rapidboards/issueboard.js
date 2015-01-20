@@ -8,6 +8,7 @@ var page = require('../page');
 var $ = page.$;
 
 var findPRs = require('../util/findPRs');
+var randomRGB = require('../util/randomRGB');
 
 var STATUS_MAP = {
     Open: 'Backlog'
@@ -59,13 +60,19 @@ function decorate(data) {
 
             var status = STATUS_MAP[data.fields.status.name] || data.fields.status.name;
 
-            $issues.find('[data-epic=' + epic + ']')
+            var $epicLinks = $issues.find('[data-epic=' + epic + ']')
                 .addClass('ghx-label-' + data.fields.status.statusCategory.id)
                 .addClass('epic-link')
-                .addClass('expanding-tag')
+                .addClass('expanding-tag');
+
+            $epicLinks
                 .append('<span class="summary">' + escape(data.fields.summary) + '</span>')
                 .append('<span class="kinda-hidden"> - ' + epic + ' - ' + status + '</span>');
 
+
+            var rgbColor = $epicLinks.css('backgroundColor');
+            var randomColor = randomRGB(rgbColor, data.fields.summary);
+            $epicLinks.css('backgroundColor', randomColor);
         });
     });
 

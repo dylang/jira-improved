@@ -5,7 +5,7 @@ var $ = page.$;
 
 
 
-function init() {
+function update() {
     $('.ghx-avatar').each(function(i, el){
         var $avatar = $(el);
         var $parent = $avatar.parent('.ghx-has-avatar');
@@ -14,5 +14,5 @@ function init() {
 }
 
 module.exports = {
-    init: init
+    update: update
 };
