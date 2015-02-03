@@ -23,6 +23,9 @@
   "omnibox": {
     "keyword": "Jira Improved"
   },
+  "permissions": [
+    "https://jira.webfilings.com/"
+  ],
   "content_scripts": [{
     "matches": ["https://*/secure/RapidBoard.jspa*", "https://*/jira/secure/RapidBoard.jspa*"],
     "js": ["js/content-script.js"],

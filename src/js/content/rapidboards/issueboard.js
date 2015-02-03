@@ -13,7 +13,7 @@ var randomRGB = require('../util/randomRGB');
 var STATUS_MAP = {
     Open: 'Backlog'
 };
-
+var prRegex = /.*github.com\/.*\/pull\/.*/;
 
 function decorate(data) {
     var issues = data.issuesData.issues;
@@ -31,6 +31,7 @@ function decorate(data) {
         }
 
         if (issue.statusName !== 'Closed' && issue.statusName !== 'Open') {
+
             openTicketsToCheckForPRs.push(issue.key);
         }
 
@@ -78,61 +79,30 @@ function decorate(data) {
 
 
     if (openTicketsToCheckForPRs.length) {
-
-        var query = {
-            maxResults: 500,
-            jql: 'issue=' + openTicketsToCheckForPRs.join(' OR issue=') + ' AND (labels is not empty OR "Code Review URL(s)" is not EMPTY)',
-            fields: ['labels', CUSTOMFIELDS.PULL_REQUESTS].join(',')
-        };
-
-        api.jql(query).then(function(data) {
-            if (!data) {
-                return;
-            }
-            if (!data.issues) {
-                return;
-            }
-
-            data.issues.forEach(function(issue){
-                var pullRequests = findPRs(issue.fields[CUSTOMFIELDS.PULL_REQUESTS]);
-
-                if (pullRequests) {
-                    var $where = $('<div class="pull-requests">').appendTo($issues.filter('[data-issue-key=' + issue.key + ']'));
-                    pullRequests.forEach(function(pullRequest) {
-
-                        if (pullRequest.api) {
-                            $where.append('<a href="' + pullRequest.url + '" target="_blank" title="' + pullRequest.url + '" ' +
-                                ' data-pr="' + pullRequest.api + '" class="pull-request pull-request-unknown">' +
-                                '</a>');
-
-                            api.get(pullRequest.api).then(function(data) {
-                                if (!data) { return; }
-
-                                $('[data-pr="' + pullRequest.api + '"')
-                                    .removeClass('pull-request-unknown')
-                                    .addClass('pull-request-' + data.state);
-                            }).fail(function(err) {
-                                if (err.status === 0) { return; }
-
-                                $('[data-pr="' + pullRequest.api + '"')
-                                    .removeClass('pull-request-unknown')
-                                    .addClass('pull-request-error');
-                            });
-                        }
-
-                        if (pullRequest.favIcon) {
-                            $where.append('<a href="' + pullRequest.url + '" target="_blank" title="' + pullRequest.url + '" ' +
-                                'class="pull-request-other">' +
-                                '<img src="' + pullRequest.favIcon + '">' +
-                                '</a>');
-                        }
-
-                    });
+        openTicketsToCheckForPRs.forEach(function(issueKey) {
+            var $where = $('<div class="pull-requests"><div style="clear:both"></div>').appendTo($issues.filter('[data-issue-key=' + issueKey + ']'));
+            $.ajax('/rest/api/2/issue/' + issueKey + '/remotelink').then(function(data) {
+                if (typeof(data) === 'string') {
+                    data = JSON.parse(data);
                 }
+                data.forEach(function(link) {
+                    if (!link.object || !link.object.url) {
+                        return;
+                    }
+                    var isPR = prRegex.test(link.object.url);
+                    if (isPR) {
+                        var title = link.object.summary || link.object.title;
+                        var $prlink = $('<img style="cursor: pointer; float: left; margin-right: 2px" title="' + title + '" width=16 height=16 src="' +
+                            link.object.icon.url16x16 +
+                            '">');
+                        $prlink.on('click', function() {
+                            window.open(link.object.url,'_blank');
+                        });
+                        $where.append($prlink);
+                        $prlink.prependTo($where);
+                    }
+                });
             });
-
-            $('.pull-request').tipsy({opacity: 1});
-
         });
     }
 }

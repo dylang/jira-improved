@@ -5,12 +5,9 @@ class="aui-label"
 .ghx-issue {
     height: auto !important;;
     min-height: 31px;
-    margin-top: 3px !important;
-    margin-bottom: 2px !important;
-    margin-left: 2px !important;
-    margin-right: 1px !important;
-    font-size: 12px !important;
-    padding: 3px 0px 2px 25px !important;
+    
+    font-size: 14px !important;
+    padding: 3px 0px 2px 3px !important;
     display: block;
     line-height: 1.1em;
 }
@@ -26,18 +23,21 @@ class="aui-label"
     height: 100% !important;
     width: 2px;
 }
-
+.ghx-summary {
+    margin-top: 8px;
+}
 .chrome .ghx-issue-fields .ghx-summary .ghx-inner,
-    .ghx-issue-fields .ghx-summary .ghx-inner {
+    .ghx-summary .ghx-inner {
     height: auto !important;
     margin-bottom: 4px;
+    max-height: none;
     display: inherit;
     overflow: inherit !important;
 }
 
 .ghx-issue .epic-link {
     overflow: hidden;
-    max-width: 100%;
+    max-width: 94%;
     transition: opacity 0.25s ease-in-out;
     opacity: 0.7;
 
@@ -62,6 +62,8 @@ class="aui-label"
 .ghx-issue .ghx-type {
     height: auto !important;
     overflow: auto !important;
+    float: right;
+    position: initial;
 }
 
 .ghx-issue .pull-request,
@@ -180,8 +182,8 @@ class="aui-label"
 
 .ghx-issue .epic-container,
 .ghx-issue .pull-requests {
-    margin-left: -20px;
-    margin-right: 15px;
+    /*margin-left: -20px;
+    margin-right: 15px;*/
 }
 
 .ghx-issue .ghx-issue-content {
@@ -192,9 +194,11 @@ class="aui-label"
 .ghx-days {
     position: relative;
     width: inherit;
-    margin-left: -35px;
+    margin-left: 0px;
 }
-
+.ghx-band-2 .ghx-issue .ghx-issue-content {
+    padding: 2px 5px 5px 5px;
+}
 
 /**
 Try to make it so the whole page will scroll
@@ -273,12 +277,13 @@ Try to make it so the whole page will scroll
 .ghx-avatar,
 .ghx-issue .ghx-avatar {
     float: right !important;
-    margin-right: 5px !important;
+    margin-right: 0px !important;
     margin-left: 3px !important;
     position: relative !important;
     top: 0 !important;
     right: 0 !important;
     left: 0 !important;
+
 }
 
 .ghx-swimlane-header {
@@ -295,9 +300,8 @@ Try to make it so the whole page will scroll
 }
 
 .ghx-issue .ghx-flags {
-    left: 5px;
-    position: absolute;
-    top: 22px;
+    float: right;
+    position: initial;
     opacity: 0.3;
 }
 
