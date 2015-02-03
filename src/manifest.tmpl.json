@@ -27,7 +27,7 @@
     "https://jira.webfilings.com/"
   ],
   "content_scripts": [{
-    "matches": ["https://*/secure/RapidBoard.jspa*", "https://*/jira/secure/RapidBoard.jspa*"],
+    "matches": ["https://jira.webfilings.com/secure/RapidBoard.jspa*", "https://jira.webfilings.com/jira/secure/RapidBoard.jspa*"],
     "js": ["js/content-script.js"],
     "run_at": "document_end",
     "all_frames": false

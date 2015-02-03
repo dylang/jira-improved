@@ -82,19 +82,21 @@ function decorate(data) {
         openTicketsToCheckForPRs.forEach(function(issueKey) {
             var $where = $('<div class="pull-requests"><div style="clear:both"></div>').appendTo($issues.filter('[data-issue-key=' + issueKey + ']'));
             $.ajax('/rest/api/2/issue/' + issueKey + '/remotelink').then(function(data) {
+                var links = {};
                 if (typeof(data) === 'string') {
                     data = JSON.parse(data);
                 }
                 data.forEach(function(link) {
-                    if (!link.object || !link.object.url) {
+                    if (!link.object || !link.object.url /*|| links[link.object.url]*/) {
                         return;
                     }
                     var isPR = prRegex.test(link.object.url);
                     if (isPR) {
+                        links[link.object.url] = true;
                         var title = link.object.summary || link.object.title;
-                        var $prlink = $('<img style="cursor: pointer; float: left; margin-right: 2px" title="' + title + '" width=16 height=16 src="' +
+                        var $prlink = $('<a href="'+link.object.url+'"><img style="cursor: pointer; float: left; margin-right: 2px" title="' + title + '" width=16 height=16 src="' +
                             link.object.icon.url16x16 +
-                            '">');
+                            '"></a>');
                         $prlink.on('click', function() {
                             window.open(link.object.url,'_blank');
                         });
