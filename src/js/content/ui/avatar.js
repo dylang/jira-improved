@@ -3,8 +3,6 @@
 var page = require('../page');
 var $ = page.$;
 
-
-
 function update() {
     $('.ghx-avatar').each(function(i, el){
         var $avatar = $(el);

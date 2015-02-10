@@ -37,7 +37,6 @@ function getTickets(project, startAt) {
             var color = issue.fields.status.statusCategory.colorName;
             var $parentTicket = $('[data-issue-key=' + parentTicket + ']');
 
-
             if (!$parentTicket.hasClass('improved')) {
                 $parentTicket
                     .addClass('improved')
@@ -54,9 +53,7 @@ function getTickets(project, startAt) {
             }
 
             var $tag = $parentTicket.find('.traffic-light .' + color);
-            if (!$tag.length) {
-                console.log(color, status);
-            }
+
             var count = ($tag.data('count') || 0) + 1;
             $tag
                 .data('count', count)
@@ -78,11 +75,6 @@ function getTickets(project, startAt) {
             $parentTicket.find('.issues .issues-' + color)
                 .append($issue);
 
-            //$parentTicket.append(trafficLight);
-            /*
-
-            var tag = ;
-            */
         });
 
 
@@ -104,9 +96,6 @@ function decorate(data) {
 
     if (isEpic(issues[0])){
         var project = projectOfIssue(issues[0]);
-
-
-
 
         getTickets(project, 0);
     }

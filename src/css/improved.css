@@ -227,8 +227,31 @@ Try to make it so the whole page will scroll
     border-bottom-width: 1px !important;
     padding: 0 10px 0 0 !important;
 }
-.ghx-controls-filters dt, .ghx-controls-filters dd {
+
+.ghx-controls-list>dl {
+    margin-right: 0;
+}
+
+input.filter {
+    margin-right: 5px;
+}
+
+.ghx-controls-sprint dd a>span {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.ghx-controls-filters dt,
+.ghx-controls-filters dd {
     margin: 0 0 2px 0 !important;
+}
+
+.ghx-controls-filters dd a {
+    padding: 4px 10px;
+}
+
+.ghx-quick-content.aui-expander-content {
+    margin-bottom: 0;
 }
 
 .ghx-controls-plan,
@@ -290,9 +313,6 @@ Try to make it so the whole page will scroll
     margin-top: 6px !important;
 }
 
-.ghx-controls-filters dd a {
-    padding: 4px 10px;
-}
 
 .ghx-issue .ghx-flags {
     left: 5px;
@@ -308,4 +328,16 @@ Try to make it so the whole page will scroll
 .ghx-issue .ghx-corner,
 .ghx-issue .ghx-corner .aui-badge{
     min-width: 1ch !important;
+}
+
+.ghx-issue .ghx-end {
+    right: 4px !important;
+    bottom: 5px !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;;
+    background: transparent !important;;
+}
+
+.aui-badge {
+    background: #f5f5f5 !important;;
 }

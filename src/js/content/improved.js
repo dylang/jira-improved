@@ -30,5 +30,6 @@ function init() {
     update();
 }
 
+avatar.update();
 filter.init();
 page.changed(init);
