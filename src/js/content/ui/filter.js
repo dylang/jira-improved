@@ -25,7 +25,6 @@ function filter(force) {
     if (!force && value === previousFilter && previousItems === $items.length) {
         return;
     }
-    console.log('FILTER ON ', value);
 
     var $matches = $items.has(':containsAnywhere("' + value + '")');
 
