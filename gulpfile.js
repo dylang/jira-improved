@@ -20,11 +20,15 @@ var livereload = require('gulp-livereload');
 
 var chalk = require('chalk');
 
+var to5ify = require("6to5ify");
+
 gulp.task('browserify', function() {
     var bundler = watchify(browserify({
-        entries: ['./src/js/content/improved'],
-        debug: true}, watchify.args
-    ));
+            entries: ['./src/js/content/improved'],
+            debug: true
+        },
+        watchify.args
+    ).transform(to5ify));
 
     // Optionally, you can apply transforms
     // and other configuration options on the
