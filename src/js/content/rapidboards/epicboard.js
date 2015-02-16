@@ -10,8 +10,8 @@ const page = require('../page');
 const $ = page.$;
 const filter = require('../ui/filter');
 
-const version = require('../../../manifest.json').version;
-const cache = require('ls-cache').createBucket('epicboard:' + CUSTOMFIELDS.EPIC_PARENT + version);
+const version = require('../../../../package.json').version;
+const cache = require('ls-cache').createBucket('epicboard:' + version);
 
 let project;
 

@@ -18,20 +18,25 @@ var page = require('./page');
 
 var GH = page.GH;
 
-function update () {
+function init() {
+    console.log('Jira Improved: Calling Init');
     avatar.update();
     // make sure this is using the same data
     GH.WorkDataLoader.getData(page.rapidViewID).then(function(data) {
         epicboard.decorate(data);
         issueboard.decorate(data);
         // must re-register in case of updates
-        page.changed(update);
+        page.changed(init);
     });
 }
 
-avatar.update();
-filter.init();
-page.changed(update);
+function update () {
+    console.log('Jira Improved: Calling Update');
+    avatar.update();
+    epicboard.update();
+    issueboard.update();
+    page.changed(init);
+}
 
 
 if (GH && GH.SwimlaneView && GH.SwimlaneView.rerenderCellOfIssue) {
@@ -41,9 +46,11 @@ if (GH && GH.SwimlaneView && GH.SwimlaneView.rerenderCellOfIssue) {
     GH.SwimlaneView.rerenderCellOfIssue = function(key) {
         console.log('issue updated:', key);
         original['GH.SwimlaneView.rerenderCellOfIssue'](key);
-        avatar.update();
-        epicboard.update();
-        //issueboard.decorate();
+        update();
     };
-
 }
+
+
+avatar.update();
+filter.init();
+page.changed(init);

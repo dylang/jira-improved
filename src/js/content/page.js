@@ -17,6 +17,8 @@ if (rapidViewID &&
     enabled = true;
 }
 
+// gh.work.pool.rendered
+
 function changed(fn) {
     if (enabled) {
         GH.CallbackManager.registerCallback(GH.WorkController.CALLBACK_POOL_RENDERED, 'SelectMostAppropriateIssueCallback', fn);

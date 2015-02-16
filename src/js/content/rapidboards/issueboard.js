@@ -1,142 +1,219 @@
 'use strict';
 
-var escape = require('escape-html');
+const _ = require('lodash');
+var co = require('co');
 
-var CUSTOMFIELDS = require('../customfields');
-var api = require('../util/api');
-var page = require('../page');
-var $ = page.$;
+const escape = require('escape-html');
 
-var findPRs = require('../util/findPRs');
-var randomRGB = require('../util/randomRGB');
+const CUSTOMFIELDS = require('../customfields');
+const FIELDS = ['summary', 'status', CUSTOMFIELDS.EPIC_NAME];
 
-var STATUS_MAP = {
+const api = require('../util/api');
+const page = require('../page');
+const $ = page.$;
+
+const findPRs = require('../util/findPRs');
+const randomRGB = require('../util/randomRGB');
+
+const version = require('../../../../package.json').version;
+const cache = require('ls-cache').createBucket('issueboard:' + version);
+
+const STATUS_MAP = {
     Open: 'Backlog'
 };
 
+let epics;
+let openTicketsToCheckForPRs;
 
-function decorate(data) {
-    var issues = data.issuesData.issues;
-    var $issues = $('.ghx-issue');
+function renderEpic(epicId) {
 
-    var epics = {};
-    var openTicketsToCheckForPRs = [];
+    var epic = cache.get(epicId);
 
-    issues.forEach(function(issue) {
-        if (!issue) { return; }
-        if (!issue.key) { return; }
+    if (!epic || !epic.issueKeys) {
+        console.log('Jira Improved: No cache for', epicId, epic);
+        return;
+    }
 
-        if (issue.typeName === 'Feature' || issue.typeName === 'Epic') {
+    var issueKeyFilter = epic.issueKeys.map(function(issueKey) {
+        return '[data-issue-key=' + issueKey + ']';
+    }).join(', ');
+
+    $(issueKeyFilter)
+        //.find('.ghx-summary')
+        .not(':has(.epic-container)')
+        .append('<div class="epic-container">' +
+        '<a href="/browse/' + epicId + '" ' +
+        'class="ghx-label-' + epic.statusId + ' epic-link expanding-tag originalColor"' +
+        'target="_blank" data-epic="' + epicId + '">' +
+        '<span class="summary">' + escape(epic.summary) + '</span>' +
+        '<span class="kinda-hidden"> - ' + epicId + ' - ' + epic.status + ' - ' + epic.alternateSummary + '</span>' +
+        '</a>' +
+        '</div>');
+
+
+    var $epicLinks = $('.originalColor[data-epic="' + epicId + '"]');
+    if (!$epicLinks.length) {
+        return;
+    }
+    var rgbColor = $epicLinks.css('backgroundColor');
+    var randomColor = randomRGB(rgbColor, epic.summary);
+    $epicLinks
+        .removeClass('originalColor')
+        .css('backgroundColor', randomColor);
+}
+
+function updateEpicCache() {
+    _.forEach(epics, function(issueKeys, epicId) {
+
+        co(function* (){
+            let data = yield api.issue(epicId, FIELDS);
+
+            if (!data || !data.fields || !data.fields.status || !data.fields.summary) { return; }
+
+            let summary = data.fields.summary.trim();
+            let alternateSummary = data.fields[CUSTOMFIELDS.EPIC_NAME].trim();
+
+            if (summary.toLocaleLowerCase() !== alternateSummary.toLocaleLowerCase()) {
+                console.log('Missmatch names!');
+                console.log(epicId, ' > ', data.fields.summary);
+                console.log(epicId, ' > ', data.fields[CUSTOMFIELDS.EPIC_NAME]);
+                if (alternateSummary.length < summary.length) {
+                    [ summary, alternateSummary ]  = [ alternateSummary, summary ];
+                }
+            } else {
+                alternateSummary = '';
+            }
+
+            cache.set(epicId, {
+                            status: STATUS_MAP[data.fields.status.name] || data.fields.status.name,
+                            statusId: data.fields.status.statusCategory.id,
+                            summary: summary,
+                            alternateSummary: alternateSummary,
+                            issueKeys: issueKeys
+                        }, 10000);
+
+            renderEpic(epicId);
+        });
+    });
+}
+
+function updatePRs() {
+
+    if (!openTicketsToCheckForPRs || !openTicketsToCheckForPRs.length) {
+        return;
+    }
+
+    var query = {
+        maxResults: 500,
+        jql: 'issue=' + openTicketsToCheckForPRs.join(' OR issue=') + ' AND (labels is not empty OR "Code Review URL(s)" is not EMPTY)',
+        fields: ['labels', CUSTOMFIELDS.PULL_REQUESTS].join(',')
+    };
+
+    co(function* (){
+        let data = yield api.jql(query);
+
+        if (!data || !data.issues) {
+            console.log('Jira Improved: No PR issues.');
             return;
         }
 
-        if (issue.statusName !== 'Closed' && issue.statusName !== 'Open') {
-            openTicketsToCheckForPRs.push(issue.key);
-        }
+        data.issues.forEach(function(issue){
 
-        var $issue = $issues.filter('[data-issue-key=' + issue.key + ']');
+            var $issue = $('[data-issue-key=' + issue.key + ']');
 
-        if (issue.epic) {
-            epics[issue.epic] = epics[issue.epic] || issue.epic;
-            $issue.find('.ghx-summary').after('<div class="epic-container"><a href="/browse/' + issue.epic + '" target="_blank" data-epic="' + issue.epic + '"></a></div>');
-        }
-    });
-
-    Object.keys(epics).forEach(function(epic) {
-
-        var FIELDS = ['summary', 'status', CUSTOMFIELDS.EPIC_NAME];
-
-        api.issue(epic, FIELDS).then(function(data) {
-            if (!data) { return; }
-            if (!data.fields) { return; }
-            if (!data.fields.status) { return; }
-            if (!data.fields.summary) { return; }
-
-            if (data.fields.summary !== data.fields[CUSTOMFIELDS.EPIC_NAME]) {
-                console.log('Missmatch names!');
-                console.log(epic, ' > ', data.fields.summary);
-                console.log(epic, ' > ', data.fields[CUSTOMFIELDS.EPIC_NAME]);
-            }
-
-            var status = STATUS_MAP[data.fields.status.name] || data.fields.status.name;
-
-            var $epicLinks = $issues.find('[data-epic=' + epic + ']')
-                .addClass('ghx-label-' + data.fields.status.statusCategory.id)
-                .addClass('epic-link')
-                .addClass('expanding-tag');
-
-            $epicLinks
-                .append('<span class="summary">' + escape(data.fields.summary) + '</span>')
-                .append('<span class="kinda-hidden"> - ' + epic + ' - ' + status + '</span>');
-
-
-            var rgbColor = $epicLinks.css('backgroundColor');
-            var randomColor = randomRGB(rgbColor, data.fields.summary);
-            $epicLinks.css('backgroundColor', randomColor);
-        });
-    });
-
-
-    if (openTicketsToCheckForPRs.length) {
-
-        var query = {
-            maxResults: 500,
-            jql: 'issue=' + openTicketsToCheckForPRs.join(' OR issue=') + ' AND (labels is not empty OR "Code Review URL(s)" is not EMPTY)',
-            fields: ['labels', CUSTOMFIELDS.PULL_REQUESTS].join(',')
-        };
-
-        api.jql(query).then(function(data) {
-            if (!data) {
-                return;
-            }
-            if (!data.issues) {
+            if ($issue.has('.pull-requests').length) {
                 return;
             }
 
-            data.issues.forEach(function(issue){
-                var pullRequests = findPRs(issue.fields[CUSTOMFIELDS.PULL_REQUESTS]);
+            var pullRequests = findPRs(issue.fields[CUSTOMFIELDS.PULL_REQUESTS]);
 
-                if (pullRequests) {
-                    var $where = $('<div class="pull-requests">').appendTo($issues.filter('[data-issue-key=' + issue.key + ']'));
-                    pullRequests.forEach(function(pullRequest) {
+            if (pullRequests) {
+                var $where = $('<div class="pull-requests">').appendTo($issue);
 
-                        if (pullRequest.api) {
-                            $where.append('<a href="' + pullRequest.url + '" target="_blank" title="' + pullRequest.url + '" ' +
-                                ' data-pr="' + pullRequest.api + '" class="pull-request pull-request-unknown">' +
-                                '</a>');
+                pullRequests.forEach(function(pullRequest) {
 
-                            api.get(pullRequest.api).then(function(data) {
-                                if (!data) { return; }
+                    if (pullRequest.api) {
+                        $where.append('<a href="' + pullRequest.url + '" target="_blank" title="' + pullRequest.url + '" ' +
+                            ' data-pr="' + pullRequest.api + '" class="pull-request pull-request-unknown">' +
+                            '</a>');
 
-                                $('[data-pr="' + pullRequest.api + '"')
-                                    .removeClass('pull-request-unknown')
-                                    .addClass('pull-request-' + data.state);
-                            }).fail(function(err) {
-                                if (err.status === 0) { return; }
+                        api.get(pullRequest.api).then(function(data) {
+                            if (!data) { return; }
 
-                                $('[data-pr="' + pullRequest.api + '"')
-                                    .removeClass('pull-request-unknown')
-                                    .addClass('pull-request-error');
-                            });
-                        }
+                            $('[data-pr="' + pullRequest.api + '"')
+                                .removeClass('pull-request-unknown')
+                                .addClass('pull-request-' + data.state);
+                        }).fail(function(err) {
+                            if (err.status === 0) { return; }
 
-                        if (pullRequest.favIcon) {
-                            $where.append('<a href="' + pullRequest.url + '" target="_blank" title="' + pullRequest.url + '" ' +
-                                'class="pull-request-other">' +
-                                '<img src="' + pullRequest.favIcon + '">' +
-                                '</a>');
-                        }
+                            $('[data-pr="' + pullRequest.api + '"')
+                                .removeClass('pull-request-unknown')
+                                .addClass('pull-request-error');
+                        });
+                    }
 
-                    });
-                }
-            });
+                    if (pullRequest.favIcon) {
+                        $where.append('<a href="' + pullRequest.url + '" target="_blank" title="' + pullRequest.url + '" ' +
+                            'class="pull-request-other">' +
+                            '<img src="' + pullRequest.favIcon + '">' +
+                            '</a>');
+                    }
 
-            $('.pull-request').tipsy({opacity: 1});
-
+                });
+            }
         });
+
+        $('.pull-requests a').tipsy({opacity: 1});
+    });
+}
+
+function update(){
+    if (!epics) {
+        return;
     }
+    console.log('Jira Improved: Update', epics);
+    // Show the cached value if there is one
+    _.forEach(epics, function(issueKeys, epicId) {
+        renderEpic(epicId);
+    });
+
+    updatePRs();
+}
+
+function decorate(data) {
+
+    const issues = _(data.issuesData.issues)
+        .filter('key')
+        .reject({typeName: 'Feature'})
+        .reject({typeName: 'Epic'})
+        .valueOf();
+
+    epics = _(issues)
+        .filter('epic')
+        .reduce(function(acc, issue){
+            let epic = issue.epic;
+            let issueKey = issue.key;
+            acc[epic] = acc[epic] || [];
+            acc[epic].push(issueKey);
+            return acc;
+        },
+        {})
+        .valueOf();
+
+    update();
+    updateEpicCache();
+
+    openTicketsToCheckForPRs = _(issues)
+        .filter(function(issue) {
+            return issue.statusName !== 'Closed' && issue.statusName !== 'Open';
+        })
+        .pluck('key')
+        .valueOf();
+
+    updatePRs();
 }
 
 module.exports = {
-    decorate: decorate
+    decorate: decorate,
+    update: update
 };
