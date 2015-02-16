@@ -1,6 +1,6 @@
 'use strict';
 
-require('6to5ify/polyfill');
+require('babelify/polyfill');
 
 var manifest = require('../../manifest.json');
 console.log('(((============ JIRA IMPROVED ' + manifest.version + ' ADDED ==============)))');
