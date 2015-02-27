@@ -16,14 +16,63 @@ const findPRs = require('../util/findPRs');
 const randomRGB = require('../util/randomRGB');
 
 const version = require('../../../../package.json').version;
-const cache = require('ls-cache').createBucket('issueboard:' + version);
+const cache = require('lscache');
 
 const STATUS_MAP = {
     Open: 'Backlog'
 };
 
+let rapidViewId;
 let epics;
 let openTicketsToCheckForPRs;
+
+function renderPullRequests(issueKey, prString) {
+
+    if (!issueKey || !prString) {
+        return;
+    }
+
+    const $issue = $('[data-issue-key=' + issueKey + ']');
+
+    $issue.find('.pull-requests').remove();
+
+    var pullRequests = findPRs(prString);
+
+    if (pullRequests) {
+        var $where = $('<div class="pull-requests">').appendTo($issue);
+
+        pullRequests.forEach(function(pullRequest) {
+
+            if (pullRequest.api) {
+                $('<a href="' + pullRequest.url + '" target="_blank" title="' + pullRequest.url + '" ' +
+                    ' data-pr="' + pullRequest.api + '" class="pull-request pull-request-unknown">' +
+                    '</a>').tipsy({opacity: 1})
+                .appendTo($where);
+
+                api.get(pullRequest.api).then(function(data) {
+                    if (!data) { return; }
+
+                    $('[data-pr="' + pullRequest.api + '"')
+                        .removeClass('pull-request-unknown')
+                        .addClass('pull-request-' + data.state);
+                }).fail(function(err) {
+                    if (err.status === 0) { return; }
+
+                    $('[data-pr="' + pullRequest.api + '"')
+                        .removeClass('pull-request-unknown')
+                        .addClass('pull-request-error');
+                });
+            }
+
+            if (pullRequest.favIcon) {
+                $where.append('<a href="' + pullRequest.url + '" target="_blank" title="' + pullRequest.url + '" ' +
+                    'class="pull-request-other">' +
+                    '<img src="' + pullRequest.favIcon + '">' +
+                    '</a>');
+            }
+        });
+    }
+}
 
 function renderEpic(epicId) {
 
@@ -97,90 +146,155 @@ function updateEpicCache() {
     });
 }
 
-function updatePRs() {
+function checkDevStatusForPullRequests(){
+
+    console.log('Jira Improved: checkDevStatusForPullRequests');
 
     if (!openTicketsToCheckForPRs || !openTicketsToCheckForPRs.length) {
         return;
     }
 
-    var query = {
+    co(function* () {
+
+        const pullRequestsSparse = yield _.map(openTicketsToCheckForPRs, function* (issue){
+            const prStatusUrl = `https://ticket.opower.com/rest/dev-status/1.0/issue/detail?issueId=${ issue.id }&applicationType=githubenterprise&dataType=pullrequest`;
+
+            let data = yield api.get(prStatusUrl);
+
+            if (!data || !data.detail || !data.detail[0].pullRequests) {
+                return;
+            }
+
+            const pullRequests = _.map(data.detail[0].pullRequests, function(pullRequest) {
+                return pullRequest.url;
+            }).join(' ');
+
+            if (!pullRequests) {
+                return;
+            }
+
+            return {
+                key: issue.key,
+                pullRequests: pullRequests
+            };
+        });
+
+        const pullRequests= _.compact(pullRequestsSparse);
+
+        if (pullRequests.length) {
+            $('.pull-requests').remove();
+
+            _.forEach(pullRequests, function(issue){
+                renderPullRequests(issue.key, issue.pullRequests);
+            });
+
+            cache.set('hasDevStatusPRs', true);
+            cache.set('pull-requests', pullRequests);
+        } else {
+            cache.remove('hasDevStatusPRs');
+            cache.remove('pull-requests');
+        }
+    });
+}
+
+function checkCustomFieldForPullRequests(){
+
+    console.log('Jira Improved: checkCustomFieldForPullRequests');
+
+    const issues = _.pluck(openTicketsToCheckForPRs, 'key')
+                    .join(' OR issue=');
+    const query = {
         maxResults: 500,
-        jql: 'issue=' + openTicketsToCheckForPRs.join(' OR issue=') + ' AND (labels is not empty OR "Code Review URL(s)" is not EMPTY)',
+        jql: 'issue=' + issues + ' AND (labels is not empty OR "Code Review URL(s)" is not EMPTY)',
         fields: ['labels', CUSTOMFIELDS.PULL_REQUESTS].join(',')
     };
+
 
     co(function* (){
         let data = yield api.jql(query);
 
         if (!data || !data.issues) {
-            console.log('Jira Improved: No PR issues.');
             return;
         }
 
-        data.issues.forEach(function(issue){
+        const pullRequests = _(data.issues)
+            .map(function(issue){
+                const pullRequests = issue.fields[CUSTOMFIELDS.PULL_REQUESTS];
 
-            var $issue = $('[data-issue-key=' + issue.key + ']');
+                if (!pullRequests) {
+                    return;
+                }
 
-            if ($issue.has('.pull-requests').length) {
-                return;
-            }
+                return {
+                    key: issue.key,
+                    pullRequests: pullRequests
+                };
+            })
+            .compact()
+            .valueOf();
 
-            var pullRequests = findPRs(issue.fields[CUSTOMFIELDS.PULL_REQUESTS]);
+        if (pullRequests.length) {
+            $('.pull-requests').remove();
 
-            if (pullRequests) {
-                var $where = $('<div class="pull-requests">').appendTo($issue);
+            console.log('Custom Field PRs', pullRequests);
 
-                pullRequests.forEach(function(pullRequest) {
+            _.forEach(pullRequests, function(issue){
+                renderPullRequests(issue.key, issue.pullRequests);
+            });
 
-                    if (pullRequest.api) {
-                        $where.append('<a href="' + pullRequest.url + '" target="_blank" title="' + pullRequest.url + '" ' +
-                            ' data-pr="' + pullRequest.api + '" class="pull-request pull-request-unknown">' +
-                            '</a>');
+            cache.set('pull-requests', pullRequests);
+            cache.set('hasCustomFieldPRs', true);
+        } else {
+            cache.remove('hasCustomFieldPRs');
+            cache.remove('pull-requests');
+        }
 
-                        api.get(pullRequest.api).then(function(data) {
-                            if (!data) { return; }
-
-                            $('[data-pr="' + pullRequest.api + '"')
-                                .removeClass('pull-request-unknown')
-                                .addClass('pull-request-' + data.state);
-                        }).fail(function(err) {
-                            if (err.status === 0) { return; }
-
-                            $('[data-pr="' + pullRequest.api + '"')
-                                .removeClass('pull-request-unknown')
-                                .addClass('pull-request-error');
-                        });
-                    }
-
-                    if (pullRequest.favIcon) {
-                        $where.append('<a href="' + pullRequest.url + '" target="_blank" title="' + pullRequest.url + '" ' +
-                            'class="pull-request-other">' +
-                            '<img src="' + pullRequest.favIcon + '">' +
-                            '</a>');
-                    }
-
-                });
-            }
-        });
-
-        $('.pull-requests a').tipsy({opacity: 1});
     });
+}
+
+function updatePRs() {
+    const cachedPullRequests = cache.get('pull-requests');
+
+    _.forEach(cachedPullRequests, function(issue){
+        renderPullRequests(issue.key, issue.pullRequests);
+    });
+
+
+    if (cache.get('hasCustomFieldPRs')) {
+        return checkCustomFieldForPullRequests();
+    }
+
+    if (cache.get('hasDevStatusPRs')) {
+        return checkDevStatusForPullRequests();
+    }
+
+    checkCustomFieldForPullRequests();
+    checkDevStatusForPullRequests();
 }
 
 function update(){
     if (!epics) {
         return;
     }
-    console.log('Jira Improved: Update', epics);
+    console.log('Jira Improved: Update');
     // Show the cached value if there is one
     _.forEach(epics, function(issueKeys, epicId) {
         renderEpic(epicId);
     });
 
-    updatePRs();
+   updatePRs();
 }
 
+
 function decorate(data) {
+    if (!data.rapidViewId || !data.issuesData || !data.issuesData.issues) {
+        console.log('not enough info for decorate', data);
+        return;
+    }
+
+    rapidViewId = data.rapidViewId;
+    console.log('Jira Improved: Decorate', rapidViewId);
+    cache.setBucket('issueboard:' + version + ':' + rapidViewId);
 
     const issues = _(data.issuesData.issues)
         .filter('key')
@@ -200,17 +314,20 @@ function decorate(data) {
         {})
         .valueOf();
 
-    update();
-    updateEpicCache();
-
     openTicketsToCheckForPRs = _(issues)
         .filter(function(issue) {
-            return issue.statusName !== 'Closed' && issue.statusName !== 'Open';
+            return issues.length < 100 || (issue.statusName !== 'Closed' && issue.statusName !== 'Open');
         })
-        .pluck('key')
+        .map(function(issue){
+            return {
+                id: issue.id,
+                key: issue.key
+            };
+        })
         .valueOf();
 
-    updatePRs();
+    update();
+    updateEpicCache();
 }
 
 module.exports = {

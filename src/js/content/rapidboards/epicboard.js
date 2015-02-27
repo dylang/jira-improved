@@ -11,7 +11,8 @@ const $ = page.$;
 const filter = require('../ui/filter');
 
 const version = require('../../../../package.json').version;
-const cache = require('ls-cache').createBucket('epicboard:' + version);
+const cache = require('lscache');
+cache.setBucket('epicboard:' + version);
 
 let project;
 
