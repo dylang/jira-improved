@@ -199,6 +199,10 @@ function checkDevStatusForPullRequests(){
 
 function checkCustomFieldForPullRequests(){
 
+    if (!openTicketsToCheckForPRs || !openTicketsToCheckForPRs.length) {
+        return;
+    }
+
     console.log('Jira Improved: checkCustomFieldForPullRequests');
 
     const issues = _.pluck(openTicketsToCheckForPRs, 'key')
@@ -236,8 +240,6 @@ function checkCustomFieldForPullRequests(){
         if (pullRequests.length) {
             $('.pull-requests').remove();
 
-            console.log('Custom Field PRs', pullRequests);
-
             _.forEach(pullRequests, function(issue){
                 renderPullRequests(issue.key, issue.pullRequests);
             });
@@ -273,14 +275,13 @@ function updatePRs() {
 }
 
 function update(){
-    if (!epics) {
-        return;
+
+    if (epics) {
+        // Show the cached value if there is one
+        _.forEach(epics, function(issueKeys, epicId) {
+            renderEpic(epicId);
+        });
     }
-    console.log('Jira Improved: Update');
-    // Show the cached value if there is one
-    _.forEach(epics, function(issueKeys, epicId) {
-        renderEpic(epicId);
-    });
 
    updatePRs();
 }
@@ -293,7 +294,7 @@ function decorate(data) {
     }
 
     rapidViewId = data.rapidViewId;
-    console.log('Jira Improved: Decorate', rapidViewId);
+    console.log('Jira Improved: Decorate', rapidViewId, '!');
     cache.setBucket('issueboard:' + version + ':' + rapidViewId);
 
     const issues = _(data.issuesData.issues)

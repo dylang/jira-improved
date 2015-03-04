@@ -290,11 +290,10 @@ input.filter {
     padding-right: 0 !important;
 }
 
-
-.ghx-band-1 .ghx-avatar,
-.ghx-band-2 .ghx-avatar,
-.ghx-avatar,
-.ghx-issue .ghx-avatar {
+.ghx-band-1 .ghx-avatar.avatar-improved,
+.ghx-band-2 .ghx-avatar.avatar-improved,
+.ghx-avatar.avatar-improved,
+.ghx-issue .ghx-avatar.avatar-improved {
     float: right !important;
     margin-right: 5px !important;
     margin-left: 3px !important;
