@@ -19,14 +19,24 @@ function filter(force) {
     //.ghx-swimlane.ghx-closed .ghx-columns .ghx-issue,
     //.ghx-swimlane.ghx-closed .ghx-columns .ghx-parent-group {
 
-    var $items = $('.ghx-issue');
     var value = $filter.val().trim();
+
+    var $items = $('.ghx-issue');
 
     if (!force && value === previousFilter && previousItems === $items.length) {
         return;
     }
 
     var $matches = $items.has(':containsAnywhere("' + value + '")');
+    var $matchesAvatar = $items.find('.ghx-avatar-img[alt*=' + value + ']');
+
+    $matchesAvatar.each(function(el){
+        var $this = $(this);
+        var $parent = $($this.parents('.ghx-issue')[0]);
+        $matches = $matches.add($parent);
+    })
+
+    $matches = $.unique($matches);
 
     $items.find('.highlight').removeClass('highlight');
 
