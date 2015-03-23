@@ -15,14 +15,12 @@ const $ = page.$;
 const findPRs = require('../util/findPRs');
 const randomRGB = require('../util/randomRGB');
 
-const version = require('../../../../package.json').version;
 const cache = require('lscache');
 
 const STATUS_MAP = {
     Open: 'Backlog'
 };
 
-let rapidViewId;
 let epics;
 let openTicketsToCheckForPRs;
 
@@ -56,6 +54,9 @@ function renderPullRequests(issueKey, prString) {
                         .removeClass('pull-request-unknown')
                         .addClass('pull-request-' + data.state);
                 }).fail(function(err) {
+
+                    console.log(issueKey, pullRequest.api, err);
+
                     if (err.status === 0) { return; }
 
                     $('[data-pr="' + pullRequest.api + '"')
@@ -73,6 +74,27 @@ function renderPullRequests(issueKey, prString) {
         });
     }
 }
+
+function renderLabels(issueKey, labels) {
+
+    if (!labels || !labels.length) {
+        return;
+    }
+
+    const $issueKey = $('[data-issue-key=' + issueKey + ']');
+    let $labelContainer = $issueKey.find('.labelContainer');
+
+    if (!$labelContainer.length) {
+        $labelContainer = $('<div class="label-container">').appendTo($issueKey);
+    }
+
+    $labelContainer.html(
+        '<span class="kinda-hidden">labels</span>' +
+        labels.map(function(label) {
+            return '<span class="label" style="background-color: ' + randomRGB('rgb(245, 245, 245)', label) +'">' + label + '</span>';
+        }).join(''));
+}
+
 
 function renderEpic(epicId) {
 
@@ -139,7 +161,7 @@ function updateEpicCache() {
                             summary: summary,
                             alternateSummary: alternateSummary,
                             issueKeys: issueKeys
-                        }, 10000);
+                        });
 
             renderEpic(epicId);
         });
@@ -157,7 +179,7 @@ function checkDevStatusForPullRequests(){
     co(function* () {
 
         const pullRequestsSparse = yield _.map(openTicketsToCheckForPRs, function* (issue){
-            const prStatusUrl = `https://ticket.opower.com/rest/dev-status/1.0/issue/detail?issueId=${ issue.id }&applicationType=githubenterprise&dataType=pullrequest`;
+            const prStatusUrl = `/rest/dev-status/1.0/issue/detail?issueId=${ issue.id }&applicationType=githubenterprise&dataType=pullrequest`;
 
             let data = yield api.get(prStatusUrl);
 
@@ -209,10 +231,12 @@ function checkCustomFieldForPullRequests(){
                     .join(' OR issue=');
     const query = {
         maxResults: 500,
-        jql: 'issue=' + issues + ' AND (labels is not empty OR "Code Review URL(s)" is not EMPTY)',
+        jql: 'issue=' + issues + ' AND ' +
+            // move detection to separate module
+            (document.location.hostname === 'ticket.opower.com' ? '(labels is not EMPTY OR "Code Review URL(s)" is not EMPTY)' :
+            'labels is not EMPTY'),
         fields: ['labels', CUSTOMFIELDS.PULL_REQUESTS].join(',')
     };
-
 
     co(function* (){
         let data = yield api.jql(query);
@@ -220,6 +244,22 @@ function checkCustomFieldForPullRequests(){
         if (!data || !data.issues) {
             return;
         }
+
+        const labels = _(data.issues)
+            .map(function(issue){
+                const labels = issue.fields.labels;
+
+                if (!labels || !labels.length) {
+                    return;
+                }
+
+                return {
+                    key: issue.key,
+                    labels: labels
+                };
+            })
+            .compact()
+            .valueOf();
 
         const pullRequests = _(data.issues)
             .map(function(issue){
@@ -236,6 +276,17 @@ function checkCustomFieldForPullRequests(){
             })
             .compact()
             .valueOf();
+
+        if (labels.length) {
+            $('.improved-labels').remove();
+
+            _.forEach(labels, function(issue){
+                renderLabels(issue.key, issue.labels);
+            });
+
+            //cache.set('pull-requests', pullRequests);
+            //cache.set('hasCustomFieldPRs', true);
+        }
 
         if (pullRequests.length) {
             $('.pull-requests').remove();
@@ -255,12 +306,15 @@ function checkCustomFieldForPullRequests(){
 }
 
 function updatePRs() {
+    if (!openTicketsToCheckForPRs) {
+        return;
+    }
+
     const cachedPullRequests = cache.get('pull-requests');
 
     _.forEach(cachedPullRequests, function(issue){
         renderPullRequests(issue.key, issue.pullRequests);
     });
-
 
     if (cache.get('hasCustomFieldPRs')) {
         return checkCustomFieldForPullRequests();
@@ -275,7 +329,6 @@ function updatePRs() {
 }
 
 function update(){
-
     if (epics) {
         // Show the cached value if there is one
         _.forEach(epics, function(issueKeys, epicId) {
@@ -293,15 +346,15 @@ function decorate(data) {
         return;
     }
 
-    rapidViewId = data.rapidViewId;
-    console.log('Jira Improved: Decorate', rapidViewId, '!');
-    cache.setBucket('issueboard:' + version + ':' + rapidViewId);
-
     const issues = _(data.issuesData.issues)
         .filter('key')
         .reject({typeName: 'Feature'})
         .reject({typeName: 'Epic'})
         .valueOf();
+
+    if (!issues.length) {
+        return;
+    }
 
     epics = _(issues)
         .filter('epic')
@@ -311,8 +364,7 @@ function decorate(data) {
             acc[epic] = acc[epic] || [];
             acc[epic].push(issueKey);
             return acc;
-        },
-        {})
+        }, {})
         .valueOf();
 
     openTicketsToCheckForPRs = _(issues)

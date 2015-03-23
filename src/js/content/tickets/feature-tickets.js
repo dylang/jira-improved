@@ -9,12 +9,13 @@ const api = require('../util/api');
 const page = require('../page');
 const $ = page.$;
 const filter = require('../ui/filter');
+const randomRGB = require('../util/randomRGB');
 
-const version = require('../../../../package.json').version;
 const cache = require('lscache');
-cache.setBucket('epicboard:' + version);
 
-let project;
+let issues;
+let fixVersionsCache = {};
+let projects;
 
 function isEpic(issue) {
     return issue && (issue.typeName === 'Feature' || issue.typeName === 'Epic');
@@ -24,9 +25,19 @@ function projectOfIssue(issue) {
     return issue.key.replace(/-.*/, '');
 }
 
+function getProjects(issues) {
+    return _(issues).map(function(issue){
+            if (!isEpic(issue)) {
+                return;
+            }
+
+            return projectOfIssue(issue);
+        }).compact().unique().valueOf();
+}
+
 function buildIssue(issue) {
     return '<div><a x-status="' + issue.status + '" href="/browse/' + issue.key + '" target="_blank" ' +
-        'data-issue-key="' + issue.key + '"' +
+        //'data-issue-key="' + issue.key + '"' +
         'class="' +
         'jira-issue-status-lozenge aui-lozenge jira-issue-status-lozenge-' + issue.color + ' jira-issue-status-lozenge-new' +
         '">' +
@@ -46,8 +57,24 @@ function buildLight(colors, color) {
                 (_.keys(colors[color]).length || '') +
             '</span>';
 }
+function buildFixVersion(issueKey) {
+    let fixVersions = fixVersionsCache[issueKey];
+
+    if (!fixVersions || !fixVersions.length) {
+        return '';
+    }
+
+    let fixVersionHTML = '<span class="kinda-hidden">fixVersion fix version fixversion</span>' +
+                            fixVersions.map(function(fixVersion) {
+                            return '<span class="fixVersion" style="background-color: ' + randomRGB('rgb(250, 200, 200)', fixVersion.name) +'">' + fixVersion.name + '</span>';
+                        }).join('');
+
+    return fixVersionHTML;
+}
 
 function renderTickets(epics) {
+
+    if (!epics) { return; }
 
     _.map(epics, function(colors, epicKey){
 
@@ -58,7 +85,11 @@ function renderTickets(epics) {
         }
 
         $improved
-            .html('<div class="traffic-light">' +
+            .html(
+            '<div class="fixVersion-container">' +
+                buildFixVersion(epicKey) +
+            '</div>' +
+            '<div class="traffic-light">' +
                 buildLight(colors, 'blue-gray') +
                 buildLight(colors, 'yellow') +
                 buildLight(colors, 'green') +
@@ -69,6 +100,51 @@ function renderTickets(epics) {
                 '<div class="issues-green">' + buildIssues(colors.green) + '</div>' +
             '</div>');
     }).valueOf();
+}
+
+function renderFixVersions() {
+    // get fix versions
+    let issueKeys = _(issues).map(function(issue){
+        if (issue.fixVersions.length) {
+            return issue.key;
+        }
+    }).compact().valueOf();
+
+    if (!issueKeys.length) {
+        return;
+    }
+
+    const query = {
+        maxResults: 500,
+        jql: 'issue=' + issueKeys.join(' OR issue='),
+        fields: ['labels', 'fixVersions'].join(',')
+    };
+
+    co(function* (){
+        let data = yield api.jql(query);
+
+        if (!data || !data.issues) {
+            return;
+        }
+
+        data.issues.forEach(function(issue){
+            let $featureTicket = $('[data-issue-key=' + issue.key + ']');
+            let $improved = $featureTicket.find('.improved');
+            if (!$improved.length) {
+                $improved = $('<div class="improved"></div>').appendTo($featureTicket);
+            }
+
+            let $fixVersionContainer = $improved.find('.fixVersion-container');
+            if (!$fixVersionContainer.length) {
+                $fixVersionContainer = $('<div class="fixVersion-container">').appendTo($improved);
+            }
+
+            fixVersionsCache[issue.key] = fixVersionsCache[issue.key] || issue.fields.fixVersions;
+            $fixVersionContainer.html(buildFixVersion(issue.key));
+
+        });
+    });
+
 }
 
 function processIssues(issues) {
@@ -107,7 +183,7 @@ function getTickets(project, startAt, acc) {
         startAt: startAt || 0,
         maxResults: 100,
         fields: ['summary', 'status', CUSTOMFIELDS.EPIC_PARENT].join(','),
-        jql: 'issueFunction in linkedIssuesOf("project = ' + project + ' AND resolution = unresolved", "is Epic of")'
+        jql: 'issueFunction in linkedIssuesOf("project = \'' + project + '\' AND resolution = unresolved", "is Epic of")'
     };
 
     co(function* () {
@@ -120,7 +196,7 @@ function getTickets(project, startAt, acc) {
         let allProcessedData = _.merge(acc, processIssues(data.issues), {});
 
         if (data.total > (data.maxResults + data.startAt)) {
-            if (!cache.get(project)) {
+            if (!cache.get('linkedTickets')) {
                 renderTickets(allProcessedData);
                 filter.filter(true);
             }
@@ -130,29 +206,30 @@ function getTickets(project, startAt, acc) {
 
         renderTickets(allProcessedData);
         filter.filter(true);
-        cache.set(project, allProcessedData, 10000);
-        console.log('Jira Improved: all tickets complete');
-
-    }).catch(function(err) { console.error(err.stack); });
-}
-
-function decorate(data) {
-    let issues = data.issuesData.issues;
-
-    if (isEpic(issues[0])){
-        project = projectOfIssue(issues[0]);
-
-        let previousData = cache.get(project);
-        renderTickets(previousData);
-        getTickets(project, 0, {});
-    }
+        cache.set('linkedTickets:' + project, allProcessedData);
+        console.log('Jira Improved: all tickets complete for ' + project, allProcessedData);
+    }).catch(function(err) { console.error(err.message, err); });
 }
 
 function update(){
-    if (!project) {
+    if (!projects.length) {
         return;
     }
-    renderTickets(cache.get(project));
+
+    _.each(projects, function(project){
+        let previousData = cache.get('linkedTickets:' + project);
+        renderTickets(previousData);
+        getTickets(project, 0, {});
+    });
+    renderFixVersions();
+}
+
+function decorate(data) {
+    issues = data.issuesData.issues;
+    projects = getProjects(issues);
+
+    console.log('===== all projects =====  ', projects.join(','));
+    update();
 }
 
 module.exports = {

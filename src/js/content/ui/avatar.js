@@ -8,6 +8,7 @@ function update() {
         var $avatar = $(el).addClass('avatar-improved');
         var $parent = $avatar.parent('.ghx-has-avatar');
         $avatar.prependTo($parent);
+        $avatar.find('[title]').tipsy();
     });
 }
 

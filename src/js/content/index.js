@@ -6,9 +6,9 @@ var manifest = require('../../manifest.json');
 console.log('(((============ JIRA IMPROVED ' + manifest.version + ' ADDED ==============)))');
 
 
-
-var epicboard = require('./rapidboards/epicboard');
-var issueboard = require('./rapidboards/issueboard');
+const cache = require('lscache');
+var featureTickets = require('./tickets/feature-tickets');
+var issueTickets = require('./tickets/issue-tickets');
 
 //var emptyColumn = require('./ui/emptyColumn');
 var filter = require('./ui/filter');
@@ -23,8 +23,12 @@ function init() {
     avatar.update();
     // make sure this is using the same data
     GH.WorkDataLoader.getData(page.rapidViewID).then(function(data) {
-        epicboard.decorate(data);
-        issueboard.decorate(data);
+
+        let rapidViewId = data.rapidViewId;
+        cache.setBucket('improved:' + rapidViewId);
+
+        featureTickets.decorate(data);
+        issueTickets.decorate(data);
         // must re-register in case of updates
         page.changed(init);
     });
@@ -33,8 +37,8 @@ function init() {
 function update () {
     console.log('Jira Improved: Calling Update');
     avatar.update();
-    epicboard.update();
-    issueboard.update();
+    featureTickets.update();
+    issueTickets.update();
     page.changed(init);
 }
 
