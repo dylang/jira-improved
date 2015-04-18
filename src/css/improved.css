@@ -118,7 +118,7 @@ class="aui-label"
 
 .ghx-issue .pull-request-closed {
     -webkit-filter: hue-rotate(90deg);
-    opacity: 50%;
+    opacity: 0.5;
 }
 
 
@@ -130,6 +130,7 @@ class="aui-label"
     display: none;
 }
 
+.ghx-parent-group .highlight,
 .ghx-issue .highlight {
     background-color: rgba(255,196,13, 0.2);
     box-shadow:
@@ -352,6 +353,11 @@ input.filter {
     background: transparent !important;;
 }
 
+.ghx-subtask-group {
+    padding-left: 6px;
+}
+
 .aui-badge {
     background: #f5f5f5 !important;;
 }
+

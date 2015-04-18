@@ -81,7 +81,7 @@ function renderLabels(issueKey, labels) {
         return;
     }
 
-    const $issueKey = $('[data-issue-key=' + issueKey + ']');
+    const $issueKey = $('.ghx-issue[data-issue-key=' + issueKey + ']');
     let $labelContainer = $issueKey.find('.labelContainer');
 
     if (!$labelContainer.length) {
@@ -111,6 +111,7 @@ function renderEpic(epicId) {
 
     $(issueKeyFilter)
         //.find('.ghx-summary')
+        .filter('.ghx-issue') // only issues, not parents of structure issues
         .not(':has(.epic-container)')
         .append('<div class="epic-container">' +
         '<a href="/browse/' + epicId + '" ' +

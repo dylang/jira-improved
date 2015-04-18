@@ -19,7 +19,7 @@ function filter(force) {
     //.ghx-swimlane.ghx-closed .ghx-columns .ghx-issue,
     //.ghx-swimlane.ghx-closed .ghx-columns .ghx-parent-group {
 
-    var $items = $('.ghx-issue');
+    var $items = $('.ghx-parent-group, .ghx-issue');
     var value = $filter.val().trim();
 
     if (!force && value === previousFilter && previousItems === $items.length) {
