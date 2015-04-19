@@ -6,7 +6,7 @@ var co = require('co');
 const escape = require('escape-html');
 
 const CUSTOMFIELDS = require('../customfields');
-const FIELDS = ['summary', 'status', CUSTOMFIELDS.EPIC_NAME];
+const FIELDS = ['summary', 'status']; //, CUSTOMFIELDS.EPIC_NAME];
 
 const api = require('../util/api');
 const page = require('../page');
@@ -143,7 +143,7 @@ function updateEpicCache() {
             if (!data || !data.fields || !data.fields.status || !data.fields.summary) { return; }
 
             let summary = data.fields.summary.trim();
-            let alternateSummary = data.fields[CUSTOMFIELDS.EPIC_NAME].trim();
+            /*let alternateSummary = (data.fields[CUSTOMFIELDS.EPIC_NAME] || summary).trim();
 
             if (summary.toLocaleLowerCase() !== alternateSummary.toLocaleLowerCase()) {
                 console.log('Mismatched names!');
@@ -154,13 +154,13 @@ function updateEpicCache() {
                 }
             } else {
                 alternateSummary = '';
-            }
+            }*/
 
             cache.set(epicId, {
                             status: STATUS_MAP[data.fields.status.name] || data.fields.status.name,
                             statusId: data.fields.status.statusCategory.id,
                             summary: summary,
-                            alternateSummary: alternateSummary,
+                            //alternateSummary: alternateSummary,
                             issueKeys: issueKeys
                         });
 
@@ -236,7 +236,7 @@ function checkCustomFieldForPullRequests(){
             // move detection to separate module
             (document.location.hostname === 'ticket.opower.com' ? '(labels is not EMPTY OR "Code Review URL(s)" is not EMPTY)' :
             'labels is not EMPTY'),
-        fields: ['labels', CUSTOMFIELDS.PULL_REQUESTS].join(',')
+        fields: ['labels', 'description', CUSTOMFIELDS.PULL_REQUESTS].join(',')
     };
 
     co(function* (){
@@ -264,6 +264,7 @@ function checkCustomFieldForPullRequests(){
 
         const pullRequests = _(data.issues)
             .map(function(issue){
+                //const pullRequests = issue.fields.description; //[CUSTOMFIELDS.PULL_REQUESTS];
                 const pullRequests = issue.fields[CUSTOMFIELDS.PULL_REQUESTS];
 
                 if (!pullRequests) {

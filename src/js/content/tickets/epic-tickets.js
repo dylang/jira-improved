@@ -4,7 +4,7 @@ const _ = require('lodash');
 
 const escape = require('escape-html');
 
-const CUSTOMFIELDS = require('../customfields');
+const customFields = require('../customfields');
 const api = require('../util/api');
 const page = require('../page');
 const $ = page.$;
@@ -149,7 +149,7 @@ function renderFixVersions() {
 
 function processIssues(issues) {
     return _.transform(issues, function(result, issue) {
-        let parentKey = issue.fields[CUSTOMFIELDS.EPIC_PARENT];
+        let parentKey = issue.fields[customFields.epicLink()];
         let color = issue.fields.status.statusCategory.colorName;
 
         result[parentKey] = result[parentKey] || {};
@@ -168,22 +168,18 @@ function processIssues(issues) {
 }
 
 function getTickets(project, startAt, acc) {
-    /*
-    if (ticketCacheStarted || ticketCacheComplete) {
-    renderTickets();
-    return;
-    }
-    */
-
-    if (!project) {
-        throw new Error('project is not valid: ' + project);
+    if (!customFields.epicLink()) {
+        console.log('Jira Improved: Cannot show Epic issues without knowning the customfield for EPIC LINK.');
+        return;
     }
 
     let query = {
         startAt: startAt || 0,
         maxResults: 100,
-        fields: ['summary', 'status', CUSTOMFIELDS.EPIC_PARENT].join(','),
-        jql: 'issueFunction in linkedIssuesOf("project = \'' + project + '\' AND resolution = unresolved", "is Epic of")'
+        fields: ['summary', 'status', customFields.epicLink()].join(','),
+        jql: 'issueFunction in linkedIssuesOf("' +
+            'project = \'' + project + '\' AND ' +
+            'resolution = unresolved", "is Epic of")'
     };
 
     co(function* () {
@@ -207,7 +203,7 @@ function getTickets(project, startAt, acc) {
         renderTickets(allProcessedData);
         filter.filter(true);
         cache.set('linkedTickets:' + project, allProcessedData);
-        console.log('Jira Improved: all tickets complete for ' + project, allProcessedData);
+        //console.log('Jira Improved: all tickets complete for ' + project, allProcessedData);
     }).catch(function(err) { console.error(err.message, err); });
 }
 
@@ -224,11 +220,14 @@ function update(){
     renderFixVersions();
 }
 
+
+
 function decorate(data) {
     issues = data.issuesData.issues;
     projects = getProjects(issues);
 
     console.log('===== all projects =====  ', projects.join(','));
+
     update();
 }
 
