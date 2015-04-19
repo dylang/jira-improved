@@ -146,7 +146,7 @@ function updateEpicCache() {
             let alternateSummary = data.fields[CUSTOMFIELDS.EPIC_NAME].trim();
 
             if (summary.toLocaleLowerCase() !== alternateSummary.toLocaleLowerCase()) {
-                console.log('Missmatch names!');
+                console.log('Mismatched names!');
                 console.log(epicId, ' > ', data.fields.summary);
                 console.log(epicId, ' > ', data.fields[CUSTOMFIELDS.EPIC_NAME]);
                 if (alternateSummary.length < summary.length) {
