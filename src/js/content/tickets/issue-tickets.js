@@ -114,12 +114,15 @@ function renderEpic(epicId) {
         .filter('.ghx-issue') // only issues, not parents of structure issues
         .not(':has(.epic-container)')
         .append('<div class="epic-container">' +
-        '<a href="/browse/' + epicId + '" ' +
-        'class="ghx-label-' + epic.statusId + ' epic-link expanding-tag originalColor"' +
-        'target="_blank" data-epic="' + epicId + '">' +
-        '<span class="summary">' + escape(epic.summary) + '</span>' +
-        '<span class="kinda-hidden"> - ' + epicId + ' - ' + epic.status + ' - ' + epic.alternateSummary + '</span>' +
-        '</a>' +
+            '<a href="/browse/' + epicId + '" ' +
+                'class="ghx-label-' + epic.statusId + ' epic-link expanding-tag originalColor" ' +
+                'title="' + epicId + ' - ' + epic.status + '"' +
+                'target="_blank" data-epic="' + epicId + '">' +
+                '<span class="summary ' + (epic.status === 'Closed' ? 'closed' : '') + '">' +
+                    '<span class="summary-text">' + escape(epic.summary) + '</span>' +
+                '</span>' +
+                '<span class="kinda-hidden"> - ' + epicId + ' - ' + epic.status + '</span>' +
+            '</a>' +
         '</div>');
 
 
@@ -131,7 +134,8 @@ function renderEpic(epicId) {
     var randomColor = randomRGB(rgbColor, epic.summary);
     $epicLinks
         .removeClass('originalColor')
-        .css('backgroundColor', randomColor);
+        .css('backgroundColor', randomColor)
+        .tipsy();
 }
 
 function updateEpicCache() {

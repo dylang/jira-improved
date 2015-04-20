@@ -58,6 +58,8 @@ function init() {
     // Add new jQuery filter for finding text anywhere
     sizzleCustomizations.addContainsAnywhere();
 
+    //<span class="aui-icon aui-icon-small aui-iconfont-search-small"></span>
+
     $filter
         .on('keyup change', filter)
         .replaceAll('#js-quickfilters-label');

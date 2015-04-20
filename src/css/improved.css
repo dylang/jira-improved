@@ -42,7 +42,7 @@ class="aui-label"
     overflow: hidden;
     max-width: 100%;
     transition: opacity 0.25s ease-in-out;
-    opacity: 0.7;
+    ppopacity: 0.7;
 
     display: inline-block;
     padding: 2px 4px;
@@ -199,6 +199,24 @@ class="aui-label"
     margin-right: 15px;
 }
 
+
+.ghx-issue .epic-container .summary {
+    color: #777 !important;
+}
+
+.ghx-issue .epic-container .summary-text {
+    color: #fff !important;
+}
+
+.ghx-issue .epic-container .closed {
+    text-decoration: line-through;
+}
+
+.ghx-issue .epic-container a:hover .closed {
+    text-decoration: none;
+}
+
+
 .ghx-issue .ghx-issue-content {
     padding: 2px;
     min-height: 0;
@@ -250,6 +268,19 @@ Try to make it so the whole page will scroll
 input.filter {
     margin-right: 5px;
 }
+
+/*
+input.filter .z {
+    background: #fff url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAAAb0lEQVR42p2RMQ7AIAhFWXsG1h7Gtffo6urqyJGpwyetomnwJ38BH/wgfZSaS7PABbVOqkqm3Fzx6IQTatlDb5PJi21YBy1iuNgjJIgzFXqyCcXj1Z1DXNGTiw01aP252DCCgH7Fk41h8KaAGMDxADnaOPucd/m3AAAAAElFTkSuQmCC) no-repeat 7px 6px;
+    margin: 8px 0;
+    padding: 2px 10px 2px 25px;
+}
+
+input.filter:focus {
+    background-color: #fff;
+    outline: none;
+}
+*/
 
 .ghx-controls-sprint dd a>span {
     padding-top: 0;
