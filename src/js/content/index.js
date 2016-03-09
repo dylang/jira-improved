@@ -14,7 +14,7 @@ require('babelify/polyfill');
 
     const cache = require('lscache');
 
-    const CACHE_VERSION = 2;
+    const CACHE_VERSION = 3;
     if (cache.get('CACHE_VERSION') !== CACHE_VERSION) {
         console.log('Jira Improved', 'Old cache version:', cache.get('CACHE_VERSION'), 'flushing to use', CACHE_VERSION);
         cache.flush();

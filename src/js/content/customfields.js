@@ -10,6 +10,10 @@ const CUSTOM_FIELD_PULL_REQUESTS = 'customfield_13153';
 
 let epicLink;
 
+function getEpicLink() {
+    return epicLink;
+}
+
 function* guessEpicLinkCustomField() {
 
     if (getEpicLink()) {
@@ -29,27 +33,35 @@ function* guessEpicLinkCustomField() {
         return;
     }
 
-    const prefix = data.issues[0].key.split('-')[0];
-    const epicLinkCustomId = _(data.issues[0].fields)
-        .findKey(function(value, key){
-            return key.startsWith('customfield_') &&
-                _.isString(value) &&
-                value.startsWith(prefix + '-');
-        })
-        .valueOf();
+    const epicLinkCustomIdArray = data.issues.map(function(issue) {
+        const epicLinkCustomId = _(data.issues[0].fields)
+            .findKey(function(value, key){
 
-    if (!epicLinkCustomId) {
-        console.log('Jira Improved: Sad Face: Could not guess the custom field for EPIC PARENT.');
+                return key.startsWith('customfield_') &&
+                    _.isString(value) &&
+                    value.includes('-') &&
+                    value.match(/^[A-Z]+-[0-9]+$/);
+            });
+
+        if (!epicLinkCustomId) {
+            console.log('Jira Improved: No EPIC PARENT for prefix:', issue.key);
+        }
+
+        return epicLinkCustomId;
+
+    }).filter(Boolean);
+
+    if (_.isArray(epicLinkCustomIdArray) && epicLinkCustomIdArray[0]) {
+        epicLink = epicLinkCustomIdArray[0];
+        cache.set('customField:EPIC_PARENT', epicLink);
+        console.log('Jira Improved: Found EPIC_PARENT:', epicLink);
+    } else {
+        console.log('Jira Improved: EPIC SAD: Could not guess the custom field for EPIC PARENT.');
     }
 
-    epicLink = epicLinkCustomId;
-    cache.set('customField:EPIC_PARENT', epicLinkCustomId);
-}
+    //epicLink = epicLinkCustomId;
 
-function getEpicLink() {
-    return epicLink;
 }
-
 
 function* init() {
     yield [guessEpicLinkCustomField];

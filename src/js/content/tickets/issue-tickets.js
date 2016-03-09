@@ -375,7 +375,7 @@ function decorate(data) {
 
     openTicketsToCheckForPRs = _(issues)
         .filter(function(issue) {
-            return issues.length < 100 || (issue.statusName !== 'Closed' && issue.statusName !== 'Open');
+            return issues.length < 100 || (issue.statusName !== 'Closed');
         })
         .map(function(issue){
             return {

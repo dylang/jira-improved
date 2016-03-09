@@ -1,8 +1,9 @@
 {
   "name": "jira-improved",
   "description": "Chrome plugin for improving Jira Kanban and Agile views.",
-  "version": "2.0.1",
+  "version": "2.0.4",
   "scripts": {
+    "start": "gulp",
     "test": "gulp test",
     "build": "gulp build"
   },
