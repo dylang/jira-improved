@@ -13,7 +13,7 @@ var sizzleCustomizations = require('../util/sizzle-customizations');
 var $filter = $('<input>').addClass('filter').attr('placeholder', 'Filter');
 
 
-function filter(force) {
+function filter() {
 
     // need to re-find all the issues in case some filter was changed that altered what tickets are viewable
     //.ghx-swimlane.ghx-closed .ghx-columns .ghx-issue,

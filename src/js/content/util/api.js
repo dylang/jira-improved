@@ -1,6 +1,6 @@
 'use strict';
 
-const got = require('got');
+//const got = require('got');
 
 var API_PREFIX = window.location.pathname.replace('/secure/RapidBoard.jspa', '');
 var API_URL = API_PREFIX + '/rest/api/2/';
