@@ -22,9 +22,10 @@ function filter(force) {
     var $items = $('.ghx-parent-group, .ghx-issue');
     var value = $filter.val().trim();
 
-    if (!force && value === previousFilter && previousItems === $items.length) {
-        return;
-    }
+    //if (!force && value === previousFilter && previousItems === $items.length) {
+    //    console.log('????????????? force not true, leaving');
+    //    return;
+    //}
 
     var $matches = $items.has(':containsAnywhere("' + value + '")');
 

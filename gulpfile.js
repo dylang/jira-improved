@@ -32,7 +32,7 @@ gulp.task('browserify', function() {
             debug: true
         },
         watchify.args
-    ).transform(babelify));
+    ).transform(babelify, {presets: ['es2015']}));
 
     // Optionally, you can apply transforms
     // and other configuration options on the
@@ -60,7 +60,7 @@ gulp.task('browserify-minified', ['manifest'], function() {
     var bundler = browserify({
             entries: ['./src/js/content/index']
         }
-    ).transform(babelify);
+    ).transform(babelify, {presets: ['es2015']});
 
     // Optionally, you can apply transforms
     // and other configuration options on the
@@ -153,3 +153,5 @@ gulp.task('watch',function() {
 gulp.task('test', ['jshint']);
 gulp.task('default', ['live-reload', 'manifest-livereload', 'watch', 'jshint-watch', 'browserify']);
 gulp.task('build', ['zip']);
+
+// todo: https://github.com/erikdesjardins/chrome-extension-deploy

@@ -209,7 +209,7 @@ function checkDevStatusForPullRequests(){
         const pullRequests= _.compact(pullRequestsSparse);
 
         if (pullRequests.length) {
-            $('.pull-requests').remove();
+            //$('.pull-requests').remove();
 
             _.forEach(pullRequests, function(issue){
                 renderPullRequests(issue.key, issue.pullRequests);
@@ -224,16 +224,17 @@ function checkDevStatusForPullRequests(){
     });
 }
 
-function checkCustomFieldForPullRequests(){
+function checkCustomFieldForPullRequests(ticketsToCheck = openTicketsToCheckForPRs){
 
-    if (!openTicketsToCheckForPRs || !openTicketsToCheckForPRs.length) {
+    if (!ticketsToCheck || !ticketsToCheck.length) {
         return;
     }
 
-    console.log('Jira Improved: checkCustomFieldForPullRequests');
+    console.log('Jira Improved: checkCustomFieldForPullRequests', ticketsToCheck.length);
 
-    const issues = _.pluck(openTicketsToCheckForPRs, 'key')
-                    .join(' OR issue=');
+    const issues = _.pluck(ticketsToCheck, 'key')
+        .splice(0, 20)
+        .join(' OR issue=');
     const query = {
         maxResults: 500,
         jql: 'issue=' + issues + ' AND ' +
@@ -284,7 +285,7 @@ function checkCustomFieldForPullRequests(){
             .valueOf();
 
         if (labels.length) {
-            $('.improved-labels').remove();
+            //$('.improved-labels').remove();
 
             _.forEach(labels, function(issue){
                 renderLabels(issue.key, issue.labels);
@@ -295,7 +296,7 @@ function checkCustomFieldForPullRequests(){
         }
 
         if (pullRequests.length) {
-            $('.pull-requests').remove();
+            //$('.pull-requests').remove();
 
             _.forEach(pullRequests, function(issue){
                 renderPullRequests(issue.key, issue.pullRequests);
@@ -309,6 +310,8 @@ function checkCustomFieldForPullRequests(){
         }
 
     });
+
+    checkCustomFieldForPullRequests(ticketsToCheck.splice(20));
 }
 
 function updatePRs() {
@@ -321,14 +324,6 @@ function updatePRs() {
     _.forEach(cachedPullRequests, function(issue){
         renderPullRequests(issue.key, issue.pullRequests);
     });
-
-    if (cache.get('hasCustomFieldPRs')) {
-        return checkCustomFieldForPullRequests();
-    }
-
-    if (cache.get('hasDevStatusPRs')) {
-        return checkDevStatusForPullRequests();
-    }
 
     checkCustomFieldForPullRequests();
     checkDevStatusForPullRequests();

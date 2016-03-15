@@ -27,7 +27,14 @@ function* guessEpicLinkCustomField() {
         jql: 'issueFunction in linkedIssuesOf("resolution = unresolved", "is Epic of")'
     };
 
-    const data = yield api.jql(query);
+    let data;
+    try {
+        data = yield api.jql(query);
+    } catch (err) {
+        console.log('Improved: Bad JQL request for custom fields', query, err.message, err);
+        return;
+    }
+
 
     if (!data || !data.issues) {
         return;

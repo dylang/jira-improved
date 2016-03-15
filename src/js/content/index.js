@@ -1,15 +1,13 @@
 'use strict';
-require('babelify/polyfill');
 
-(function () {
+require('babel-core/register');
 
-    var manifest = require('../../manifest.json');
+var manifest = require('../../manifest.json');
 
-    const page = require('./page');
-    const GH = page.GH;
+const page = require('./page');
+const GH = page.GH;
 
-    if (!GH) {return;}
-
+function runExtension() {
     console.log('(((============ JIRA IMPROVED ' + manifest.version + ' ADDED ==============)))');
 
     const cache = require('lscache');
@@ -30,8 +28,8 @@ require('babelify/polyfill');
     const customFields = require('./customfields');
     const co = require('co');
 
-    function init() {
-        co(function* (){
+    function init () {
+        co(function* () {
             console.log('Jira Improved: Calling Init');
             avatar.update();
             // make sure this is using the same data
@@ -44,6 +42,7 @@ require('babelify/polyfill');
 
             epicTickets.decorate(data);
             issueTickets.decorate(data);
+
             // must re-register in case of updates
             page.changed(init);
         });
@@ -57,7 +56,6 @@ require('babelify/polyfill');
         page.changed(init);
     }
 
-
     if (GH && GH.SwimlaneView && GH.SwimlaneView.rerenderCellOfIssue) {
         var original = {};
         original['GH.SwimlaneView.rerenderCellOfIssue'] = GH.SwimlaneView.rerenderCellOfIssue;
@@ -69,9 +67,12 @@ require('babelify/polyfill');
         };
     }
 
-
     avatar.update();
     filter.init();
     page.changed(init);
 
-})();
+}
+
+if (GH) {
+    runExtension();
+}

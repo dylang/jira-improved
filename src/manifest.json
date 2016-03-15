@@ -1,6 +1,6 @@
 {
   "name": "__MSG_appName__",
-  "version": "2.0.4",
+  "version": "8802.0.4",
   "manifest_version": 2,
   "description": "__MSG_appDescription__",
   "icons": {
@@ -10,7 +10,8 @@
   "default_locale": "en",
   "background": {
     "scripts": [
-      "js/background.js"
+      "js/background.js",
+      "js/live-reload.js"
     ]
   },
   "page_action": {

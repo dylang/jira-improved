@@ -78,7 +78,7 @@ function renderTickets(epics) {
 
     _.map(epics, function(colors, epicKey){
 
-        let $featureTicket = $('[data-issue-key=' + epicKey + ']');
+        let $featureTicket = $('[data-issue-key=' + epicKey + ']').first();
         let $improved = $featureTicket.find('.improved');
         if (!$improved.length) {
             $improved = $('<div class="improved"></div>').appendTo($featureTicket);
