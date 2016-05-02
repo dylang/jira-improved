@@ -40,6 +40,7 @@ function prUrlToAPI(str) {
         return {
             url: urlString,
             api: apiUrl,
+            host: urlObj.host,
             favIcon: favIcon
         };
     });

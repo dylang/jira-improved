@@ -68,7 +68,8 @@ function renderPullRequests(issueKey, prString) {
             if (pullRequest.favIcon) {
                 $where.append('<a href="' + pullRequest.url + '" target="_blank" title="' + pullRequest.url + '" ' +
                     'class="pull-request-other">' +
-                    '<img src="' + pullRequest.favIcon + '">' +
+                    '<img src="' + pullRequest.favIcon + '" onerror="this.parentElement.classList.add(\'broken-image\');">' +
+                    '<span class="ghx-avatar-img" style="background-color: ' + randomRGB('rgb(32,115,150)', pullRequest.host) +'">' + pullRequest.host.substring(0, 2) +'</span>' +
                     '</a>');
             }
         });
@@ -113,6 +114,7 @@ function renderEpic(epicId) {
         //.find('.ghx-summary')
         .filter('.ghx-issue') // only issues, not parents of structure issues
         .not(':has(.epic-container)')
+        //.not(':has([data-epickey="' + epicId + '")]')
         .append('<div class="epic-container">' +
             '<a href="/browse/' + epicId + '" ' +
                 'class="ghx-label-' + epic.statusId + ' epic-link expanding-tag originalColor" ' +

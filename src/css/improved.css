@@ -29,6 +29,7 @@ class="aui-label"
 
 .chrome .ghx-issue-fields .ghx-summary .ghx-inner,
     .ghx-issue-fields .ghx-summary .ghx-inner {
+    max-height: none !important;
     height: auto !important;
     margin-bottom: 4px;
     display: inherit;
@@ -82,7 +83,7 @@ class="aui-label"
     width: 16px;
     height: 16px;
     display: inline-block;
-
+    vertical-align: middle;
     box-shadow: none;
     transition: box-shadow 0.25s ease-in-out;
 }
@@ -90,6 +91,22 @@ class="aui-label"
 .ghx-issue .pull-request-other img {
     width: 16px;
     height: 16px;
+}
+
+.ghx-issue .pull-request-other .ghx-avatar-img {
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    font-size: 11px;
+    display: none;
+}
+
+.ghx-issue .pull-request-other.broken-image img {
+    display: none;
+}
+
+.ghx-issue .pull-request-other.broken-image span {
+    display: inline-block;
 }
 
 .ghx-issue .pull-request {
@@ -224,6 +241,7 @@ class="aui-label"
 }
 
 
+.ghx-band-2 .ghx-issue .ghx-issue-content,
 .ghx-issue .ghx-issue-content {
     padding: 2px;
     min-height: 0;
@@ -235,6 +253,9 @@ class="aui-label"
     margin-left: -35px;
 }
 
+.ghx-agile .aui-label {
+    font-size: 10px !important;
+}
 
 /**
 Try to make it so the whole page will scroll
@@ -408,4 +429,11 @@ input.filter:focus {
 
 .ghx-swimlane-header .improved {
     display: inline-block;
+}
+
+/*
+Because of duplication. This is probably not a great long-term solution.
+*/
+.ghx-highlighted-fields {
+    display: none;
 }
