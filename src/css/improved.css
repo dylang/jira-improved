@@ -5,9 +5,12 @@ class="aui-label"
 .ghx-issue {
     height: auto !important;;
     min-height: 31px;
-    
-    font-size: 14px !important;
-    padding: 3px 0px 2px 3px !important;
+    margin-top: 3px !important;
+    margin-bottom: 2px !important;
+    margin-left: 2px !important;
+    margin-right: 1px !important;
+    font-size: 12px !important;
+    padding: 3px 0px 2px 25px !important;
     display: block;
     line-height: 1.1em;
 }
@@ -23,23 +26,24 @@ class="aui-label"
     height: 100% !important;
     width: 2px;
 }
-.ghx-summary {
-    margin-top: 8px;
-}
+
 .chrome .ghx-issue-fields .ghx-summary .ghx-inner,
-    .ghx-summary .ghx-inner {
+    .ghx-issue-fields .ghx-summary .ghx-inner {
+    max-height: none !important;
     height: auto !important;
     margin-bottom: 4px;
-    max-height: none;
     display: inherit;
     overflow: inherit !important;
 }
 
+
+.ghx-issue .fixVersion-container .fixVersion,
+.ghx-issue .label-container .label,
 .ghx-issue .epic-link {
     overflow: hidden;
-    max-width: 94%;
+    max-width: 100%;
     transition: opacity 0.25s ease-in-out;
-    opacity: 0.7;
+    ppopacity: 0.7;
 
     display: inline-block;
     padding: 2px 4px;
@@ -59,11 +63,19 @@ class="aui-label"
 .ghx-issue .epic-link .status {
 }
 
+.ghx-issue .fixVersion-container .fixVersion,
+.ghx-issue .label-container .label {
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    color: #383838;
+    border-radius: 3px;
+    margin-right: 3px;
+}
+
+
 .ghx-issue .ghx-type {
     height: auto !important;
     overflow: auto !important;
-    float: right;
-    position: initial;
 }
 
 .ghx-issue .pull-request,
@@ -71,7 +83,7 @@ class="aui-label"
     width: 16px;
     height: 16px;
     display: inline-block;
-
+    vertical-align: middle;
     box-shadow: none;
     transition: box-shadow 0.25s ease-in-out;
 }
@@ -79,6 +91,22 @@ class="aui-label"
 .ghx-issue .pull-request-other img {
     width: 16px;
     height: 16px;
+}
+
+.ghx-issue .pull-request-other .ghx-avatar-img {
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    font-size: 11px;
+    display: none;
+}
+
+.ghx-issue .pull-request-other.broken-image img {
+    display: none;
+}
+
+.ghx-issue .pull-request-other.broken-image span {
+    display: inline-block;
 }
 
 .ghx-issue .pull-request {
@@ -107,7 +135,6 @@ class="aui-label"
 
 .ghx-issue .pull-request-closed {
     -webkit-filter: hue-rotate(90deg);
-    opacity: 50%;
 }
 
 
@@ -119,6 +146,7 @@ class="aui-label"
     display: none;
 }
 
+.ghx-parent-group .highlight,
 .ghx-issue .highlight {
     background-color: rgba(255,196,13, 0.2);
     box-shadow:
@@ -147,6 +175,7 @@ class="aui-label"
 }
 
 
+.improved .jira-issue-status-lozenge,
 .ghx-issue .aui-lozenge {
     font-weight: normal;
     text-align: left;
@@ -155,12 +184,17 @@ class="aui-label"
     max-width: 100%;
 }
 
+.ghx-swimlane-header .improved .aui-lozenge {
+    display: inline-block;
+}
+
 
 .ghx-issue .traffic-light {
     margin-left: -20px;
 }
 
-.ghx-issue .issues {
+.ghx-issue .issues,
+.ghx-swimlane-header .issues {
     display: none;
     margin-left: -20px;
     margin-right: 15px;
@@ -176,16 +210,39 @@ class="aui-label"
         0 0 4px 1px rgba(0,0,0,0.2);
 }
 
-.ghx-issue:hover .issues {
+.ghx-issue:hover .issues,
+.ghx-swimlane-header:hover .issues {
     display: block;
 }
 
 .ghx-issue .epic-container,
-.ghx-issue .pull-requests {
-    /*margin-left: -20px;
-    margin-right: 15px;*/
+.ghx-issue .pull-requests,
+.ghx-issue .label-container,
+.ghx-issue .fixVersion-container {
+    margin-left: -20px;
+    margin-right: 15px;
 }
 
+
+.ghx-issue .epic-container .summary {
+    color: #777 !important;
+}
+
+.ghx-issue .epic-container .summary-text {
+    color: #fff !important;
+}
+
+.ghx-issue .epic-container .closed {
+    text-decoration: line-through;
+}
+
+.ghx-issue .epic-container a:hover .closed {
+    text-decoration: none;
+}
+
+
+.ghx-band-1 .ghx-issue .ghx-issue-content,
+.ghx-band-2 .ghx-issue .ghx-issue-content,
 .ghx-issue .ghx-issue-content {
     padding: 2px;
     min-height: 0;
@@ -194,10 +251,11 @@ class="aui-label"
 .ghx-days {
     position: relative;
     width: inherit;
-    margin-left: 0px;
+    margin-left: -35px;
 }
-.ghx-band-2 .ghx-issue .ghx-issue-content {
-    padding: 2px 5px 5px 5px;
+
+.ghx-agile .aui-label {
+    font-size: 10px !important;
 }
 
 /**
@@ -231,8 +289,44 @@ Try to make it so the whole page will scroll
     border-bottom-width: 1px !important;
     padding: 0 10px 0 0 !important;
 }
-.ghx-controls-filters dt, .ghx-controls-filters dd {
+
+.ghx-controls-list>dl {
+    margin-right: 0;
+}
+
+input.filter {
+    margin-right: 5px;
+}
+
+/*
+input.filter .z {
+    background: #fff url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAAAb0lEQVR42p2RMQ7AIAhFWXsG1h7Gtffo6urqyJGpwyetomnwJ38BH/wgfZSaS7PABbVOqkqm3Fzx6IQTatlDb5PJi21YBy1iuNgjJIgzFXqyCcXj1Z1DXNGTiw01aP252DCCgH7Fk41h8KaAGMDxADnaOPucd/m3AAAAAElFTkSuQmCC) no-repeat 7px 6px;
+    margin: 8px 0;
+    padding: 2px 10px 2px 25px;
+}
+
+input.filter:focus {
+    background-color: #fff;
+    outline: none;
+}
+*/
+
+.ghx-controls-sprint dd a>span {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.ghx-controls-filters dt,
+.ghx-controls-filters dd {
     margin: 0 0 2px 0 !important;
+}
+
+.ghx-controls-filters dd a {
+    padding: 4px 10px;
+}
+
+.ghx-quick-content.aui-expander-content {
+    margin-bottom: 0;
 }
 
 .ghx-controls-plan,
@@ -271,37 +365,34 @@ Try to make it so the whole page will scroll
     padding-right: 0 !important;
 }
 
-
-.ghx-band-1 .ghx-avatar,
-.ghx-band-2 .ghx-avatar,
-.ghx-avatar,
-.ghx-issue .ghx-avatar {
+.ghx-band-1 .ghx-avatar.avatar-improved,
+.ghx-band-2 .ghx-avatar.avatar-improved,
+.ghx-avatar.avatar-improved,
+.ghx-issue .ghx-avatar.avatar-improved {
     float: right !important;
-    margin-right: 0px !important;
-    margin-left: 3px !important;
+    margin-right: 3px !important;
+    margin-left: 2px !important;
     position: relative !important;
     top: 0 !important;
     right: 0 !important;
     left: 0 !important;
-
 }
 
 .ghx-swimlane-header {
     font-size: 12px;
     line-height: 0.4em;
+    overflow: visible;
 }
 
 .ghx-swimlane-header .ghx-expander .ghx-iconfont {
     margin-top: 6px !important;
 }
 
-.ghx-controls-filters dd a {
-    padding: 4px 10px;
-}
 
 .ghx-issue .ghx-flags {
-    float: right;
-    position: initial;
+    left: 5px;
+    position: absolute;
+    top: 22px;
     opacity: 0.3;
 }
 
@@ -312,4 +403,38 @@ Try to make it so the whole page will scroll
 .ghx-issue .ghx-corner,
 .ghx-issue .ghx-corner .aui-badge{
     min-width: 1ch !important;
+}
+
+.ghx-issue .ghx-end {
+    right: 4px !important;
+    bottom: 5px !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;;
+    background: transparent !important;;
+}
+
+.ghx-subtask-group {
+    padding-left: 6px;
+}
+
+.aui-badge {
+    background: #f5f5f5 !important;;
+}
+
+
+.ghx-swimlane-header .ghx-heading {
+    display: inline-block;
+    margin: 10px 10px 10px 0;
+    width: auto;
+}
+
+.ghx-swimlane-header .improved {
+    display: inline-block;
+}
+
+/*
+Because of duplication. This is probably not a great long-term solution.
+*/
+.ghx-highlighted-fields {
+    display: none;
 }

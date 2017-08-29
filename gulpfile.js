@@ -20,11 +20,19 @@ var livereload = require('gulp-livereload');
 
 var chalk = require('chalk');
 
+var babelify = require('babelify');
+
+var uglify = require('gulp-uglify');
+var buffer = require('vinyl-buffer');
+
+
 gulp.task('browserify', function() {
     var bundler = watchify(browserify({
-        entries: ['./src/js/content/improved'],
-        debug: true}, watchify.args
-    ));
+            entries: ['./src/js/content/index'],
+            debug: true
+        },
+        watchify.args
+    ).transform(babelify, {presets: ['es2015']}));
 
     // Optionally, you can apply transforms
     // and other configuration options on the
@@ -48,6 +56,36 @@ gulp.task('browserify', function() {
     return rebundle();
 });
 
+gulp.task('browserify-minified', ['manifest'], function() {
+    var bundler = browserify({
+            entries: ['./src/js/content/index']
+        }
+    ).transform(babelify, {presets: ['es2015']});
+
+    // Optionally, you can apply transforms
+    // and other configuration options on the
+    // bundler just as you would with browserify
+    //bundler.transform('brfs');
+
+    function rebundle() {
+        return bundler.bundle()
+            .on('error', function(e) {
+              gutil.log(chalk.red('Error: ' +  e.message));
+            })
+            .pipe(source('bundle.js'))
+            .pipe(buffer())
+            .pipe(uglify())
+            .pipe(gulp.dest('src/js/dist'));
+    }
+
+    bundler
+        .on('update', rebundle);
+        // log errors if they happen;
+
+    return rebundle();
+});
+
+
 gulp.task('jshint-watch', function(){
     return watch([
             'gulpfile.js',
@@ -67,7 +105,7 @@ gulp.task('jshint', function(){
         .pipe(jshint.reporter(stylish));
 });
 
-gulp.task('zip', ['manifest'], function () {
+gulp.task('zip', ['browserify-minified'], function () {
 
     var pkg = require('./package.json');
 
@@ -115,3 +153,5 @@ gulp.task('watch',function() {
 gulp.task('test', ['jshint']);
 gulp.task('default', ['live-reload', 'manifest-livereload', 'watch', 'jshint-watch', 'browserify']);
 gulp.task('build', ['zip']);
+
+// todo: https://github.com/erikdesjardins/chrome-extension-deploy

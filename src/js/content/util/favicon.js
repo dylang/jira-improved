@@ -23,6 +23,12 @@ function faviconUrl (urlStr) {
         return 'http://marketplace.servicerocket.com/static/products/atlassian/logoCruciblePNG.png';
     }
 
+    if (urlObj.host === 'testrail.va.opower.it') {
+        return 'http://help.fogcreek.com/wp-content/uploads/2015/01/testrail.png';
+    }
+
+
+
     /*
     var favIconNotWorking = url.format({
         protocol: 'https',

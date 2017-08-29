@@ -13,19 +13,19 @@ var sizzleCustomizations = require('../util/sizzle-customizations');
 var $filter = $('<input>').addClass('filter').attr('placeholder', 'Filter');
 
 
-function filter(force) {
+function filter() {
 
     // need to re-find all the issues in case some filter was changed that altered what tickets are viewable
     //.ghx-swimlane.ghx-closed .ghx-columns .ghx-issue,
     //.ghx-swimlane.ghx-closed .ghx-columns .ghx-parent-group {
 
-    var $items = $('.ghx-issue');
+    var $items = $('.ghx-parent-group, .ghx-issue');
     var value = $filter.val().trim();
 
-    if (!force && value === previousFilter && previousItems === $items.length) {
-        return;
-    }
-    console.log('FILTER ON ', value);
+    //if (!force && value === previousFilter && previousItems === $items.length) {
+    //    console.log('????????????? force not true, leaving');
+    //    return;
+    //}
 
     var $matches = $items.has(':containsAnywhere("' + value + '")');
 
@@ -58,6 +58,8 @@ function init() {
 
     // Add new jQuery filter for finding text anywhere
     sizzleCustomizations.addContainsAnywhere();
+
+    //<span class="aui-icon aui-icon-small aui-iconfont-search-small"></span>
 
     $filter
         .on('keyup change', filter)
