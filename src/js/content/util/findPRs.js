@@ -8,7 +8,8 @@ var favIconUrl = require('./favicon');
 function prUrlToAPI(str) {
     if (!str || str.length === 0) { return; }
 
-    var urls = getUrls(str);
+    var urlSet = getUrls(str);
+    var urls = Array.from(urlSet);
 
     // URL: https://github.com/x-web/x-web-canonical-lookup/pull/35
     // API: https://github.com/api/v3/repos/x-web/x-web-canonical-lookup/pulls/35

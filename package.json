@@ -1,7 +1,7 @@
 {
   "name": "jira-improved",
   "description": "Chrome plugin for improving Jira Kanban and Agile views.",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "scripts": {
     "start": "gulp",
     "test": "gulp test",
@@ -28,40 +28,42 @@
     "url": "https://github.com/dylang/jira-improved.git"
   },
   "dependencies": {
-    "babel-polyfill": "^6.7.4",
-    "babel-preset-es2015": "^6.6.0",
-    "babel-preset-stage-0": "^6.5.0",
+    "babel-runtime": "^6.26.0",
     "babelify": "^7.3.0",
-    "chrome-extension-deploy": "^2.0.1",
+    "chrome-extension-deploy": "^3.0.0",
     "co": "^4.6.0",
-    "got": "^6.3.0",
+    "got": "^7.1.0",
     "lodash": "^3.7.0",
-    "lscache": "^1.0.5",
+    "lscache": "^1.1.0",
     "seed-random": "^2.2.0"
   },
   "devDependencies": {
-    "browserify": "^13.0.0",
-    "chalk": "^1.1.3",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.0",
+    "browserify": "^14.4.0",
+    "browserify-shim": "^3.8.14",
+    "chalk": "^2.1.0",
     "escape-html": "^1.0.3",
-    "get-urls": "^4.0.0",
+    "get-urls": "^7.0.0",
     "gulp": "^3.9.1",
-    "gulp-bump": "^0.2.1",
-    "gulp-debug": "^2.1.2",
-    "gulp-jshint": "^1.10.0",
+    "gulp-bump": "^2.8.0",
+    "gulp-debug": "^3.1.0",
+    "gulp-jshint": "^2.0.4",
     "gulp-json-editor": "^2.2.1",
     "gulp-livereload": "^3.8.1",
     "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^1.5.3",
-    "gulp-util": "^3.0.7",
-    "gulp-watch": "^3.0.0",
-    "gulp-zip": "^2.0.3",
-    "jshint-stylish": "^1.0.1",
+    "gulp-uglify": "^3.0.0",
+    "gulp-util": "^3.0.8",
+    "gulp-watch": "^4.3.11",
+    "gulp-zip": "^4.0.0",
+    "jshint": "^2.9.5",
+    "jshint-stylish": "^2.2.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
-    "watchify": "^2.4.0"
+    "watchify": "^3.9.0"
   },
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=4"
   },
   "license": "MIT"
 }

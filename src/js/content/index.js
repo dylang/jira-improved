@@ -1,7 +1,5 @@
 'use strict';
 
-require('babel-core/register');
-
 var manifest = require('../../manifest.json');
 
 const page = require('./page');
