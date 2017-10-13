@@ -32,7 +32,13 @@ gulp.task('browserify', function() {
             debug: true
         },
         watchify.args
-    ).transform(babelify, {presets: ['es2015']}));
+    ).transform(
+        babelify,
+        {
+            presets: ['env'],
+            plugins: ['transform-runtime']
+        }
+    ));
 
     // Optionally, you can apply transforms
     // and other configuration options on the
@@ -60,7 +66,13 @@ gulp.task('browserify-minified', ['manifest'], function() {
     var bundler = browserify({
             entries: ['./src/js/content/index']
         }
-    ).transform(babelify, {presets: ['es2015']});
+    ).transform(
+        babelify,
+        {
+            presets: ['env'],
+            plugins: ['transform-runtime']
+        }
+    );
 
     // Optionally, you can apply transforms
     // and other configuration options on the

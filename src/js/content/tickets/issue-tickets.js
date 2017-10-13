@@ -30,7 +30,7 @@ function renderPullRequests(issueKey, prString) {
         return;
     }
 
-    const $issue = $('[data-issue-key=' + issueKey + ']');
+    const $issue = $('[data-issue-key=' + issueKey + ']:not(.ghx-swimlane-header):not(.ghx-parent-group)');
 
     $issue.find('.pull-requests').remove();
 
