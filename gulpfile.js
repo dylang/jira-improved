@@ -22,7 +22,10 @@ var chalk = require('chalk');
 
 var babelify = require('babelify');
 
-var uglify = require('gulp-uglify');
+var uglify = require('uglify-es');
+var composer = require('gulp-uglify/composer');
+var minify = composer(uglify, console);
+
 var buffer = require('vinyl-buffer');
 
 
@@ -86,7 +89,7 @@ gulp.task('browserify-minified', ['manifest'], function() {
             })
             .pipe(source('bundle.js'))
             .pipe(buffer())
-            .pipe(uglify())
+            .pipe(minify())
             .pipe(gulp.dest('src/js/dist'));
     }
 
